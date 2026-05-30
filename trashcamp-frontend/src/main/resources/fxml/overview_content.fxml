@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true" styleClass="content-scroll" hbarPolicy="NEVER"
+            xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.trashcamp.frontend.controller.OverviewController">
+    <content>
+        <VBox spacing="20">
+            <padding><Insets top="24" right="24" bottom="30" left="24"/></padding>
+
+            <!-- ===== STAT CARDS ROW ===== -->
+            <HBox spacing="16">
+                <!-- Card 1: Total Pendaki -->
+                <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="8" alignment="CENTER_LEFT">
+                    <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <VBox styleClass="stat-card-icon-box" alignment="CENTER">
+                            <Label text="🧗" styleClass="stat-card-icon"/>
+                        </VBox>
+                        <VBox spacing="4">
+                            <Label text="Total Pendaki" styleClass="stat-card-label"/>
+                            <Label fx:id="lblTotalHikers" text="1,240" styleClass="stat-card-value"/>
+                        </VBox>
+                    </HBox>
+                    <Label fx:id="lblHikersChange" text="↑ 12% dari bulan lalu" styleClass="stat-card-change-pos"/>
+                </VBox>
+
+                <!-- Card 2: Total Sampah -->
+                <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="8" alignment="CENTER_LEFT">
+                    <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <VBox styleClass="stat-card-icon-box" alignment="CENTER">
+                            <Label text="♻" styleClass="stat-card-icon"/>
+                        </VBox>
+                        <VBox spacing="4">
+                            <Label text="Total Sampah" styleClass="stat-card-label"/>
+                            <Label fx:id="lblTotalWaste" text="450 kg" styleClass="stat-card-value"/>
+                        </VBox>
+                    </HBox>
+                    <Label fx:id="lblWasteChange" text="↓ 5% pencemaran berkurang" styleClass="stat-card-change-pos"/>
+                </VBox>
+
+                <!-- Card 3: Pendakian Aktif -->
+                <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="8" alignment="CENTER_LEFT">
+                    <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <VBox styleClass="stat-card-icon-box" alignment="CENTER">
+                            <Label text="⛺" styleClass="stat-card-icon"/>
+                        </VBox>
+                        <VBox spacing="4">
+                            <Label text="Pendakian Aktif" styleClass="stat-card-label"/>
+                            <Label fx:id="lblActiveTrips" text="85" styleClass="stat-card-value"/>
+                        </VBox>
+                    </HBox>
+                    <Label text="Sedang di gunung" styleClass="stat-card-label"/>
+                </VBox>
+
+                <!-- Card 4: Total Deposit -->
+                <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="8" alignment="CENTER_LEFT">
+                    <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <VBox styleClass="stat-card-icon-box" alignment="CENTER">
+                            <Label text="💰" styleClass="stat-card-icon"/>
+                        </VBox>
+                        <VBox spacing="4">
+                            <Label text="Total Deposit" styleClass="stat-card-label"/>
+                            <Label fx:id="lblTotalDeposit" text="Rp 1,2 Jt" styleClass="stat-card-value"/>
+                        </VBox>
+                    </HBox>
+                    <Label text="Bulan ini" styleClass="stat-card-label"/>
+                </VBox>
+            </HBox>
+
+            <!-- ===== CHARTS ROW ===== -->
+            <HBox spacing="16">
+                <!-- Bar Chart Panel -->
+                <VBox styleClass="panel" HBox.hgrow="ALWAYS" spacing="12">
+                    <padding><Insets top="20" right="20" bottom="16" left="20"/></padding>
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <VBox spacing="2">
+                            <Label text="Waste Collection Analytics" styleClass="panel-title"/>
+                            <Label text="Distribusi sampah per kategori — bulan ini" styleClass="panel-subtitle"/>
+                        </VBox>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label text="Mei 2026" styleClass="badge-green"/>
+                    </HBox>
+                    <BarChart fx:id="wasteBarChart" styleClass="bar-chart"
+                              legendVisible="false" animated="true" prefHeight="230">
+                        <xAxis>
+                            <CategoryAxis fx:id="chartXAxis" label="Kategori"/>
+                        </xAxis>
+                        <yAxis>
+                            <NumberAxis label="Kg" lowerBound="0" upperBound="220"
+                                        tickUnit="50" autoRanging="false"/>
+                        </yAxis>
+                    </BarChart>
+                </VBox>
+
+                <!-- Eco Score Panel -->
+                <VBox styleClass="panel" prefWidth="260" alignment="CENTER" spacing="10">
+                    <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                    <Label text="Eco Score" styleClass="panel-title"/>
+                    <Label text="Compliance bulan ini" styleClass="panel-subtitle"/>
+                    <StackPane>
+                        <Canvas fx:id="ecoScoreCanvas" width="180" height="180"/>
+                    </StackPane>
+                    <Label fx:id="lblEcoScore" text="94" styleClass="eco-score-number"/>
+                    <Label text="/ 100 · Sangat Baik" styleClass="eco-score-label"/>
+                    <Label text="🌿 Excellent" styleClass="eco-grade-excellent"/>
+                </VBox>
+            </HBox>
+
+            <!-- ===== RECENT ACTIVITY ===== -->
+            <VBox styleClass="panel" spacing="12">
+                <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                <HBox alignment="CENTER_LEFT">
+                    <Label text="Recent Activity" styleClass="panel-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="Lihat Semua →" styleClass="secondary-button" onAction="#onViewAllActivity"/>
+                </HBox>
+                <ListView fx:id="lvRecentActivity" styleClass="activity-list" prefHeight="200"/>
+            </VBox>
+
+        </VBox>
+    </content>
+</ScrollPane>

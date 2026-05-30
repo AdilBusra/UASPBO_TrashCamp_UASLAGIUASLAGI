@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane fitToWidth="true" styleClass="content-scroll" hbarPolicy="NEVER"
+            xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.trashcamp.frontend.controller.CheckInController">
+    <content>
+        <VBox spacing="20">
+            <padding><Insets top="24" right="24" bottom="30" left="24"/></padding>
+
+            <!-- ===== HEADER ===== -->
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <VBox spacing="4">
+                    <Label text="Hiker Check-In" styleClass="section-header"/>
+                    <Label text="Daftarkan kelompok pendaki baru dan logistik sampah bawaan" styleClass="section-sub"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="Reset Form" styleClass="secondary-button" onAction="#onReset"/>
+            </HBox>
+
+            <!-- ===== MAIN CONTENT: 2 PANEL ===== -->
+            <HBox spacing="20" VBox.vgrow="ALWAYS">
+
+                <!-- ===== PANEL KIRI: Data Kelompok ===== -->
+                <VBox styleClass="panel" prefWidth="420" spacing="18">
+                    <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+
+                    <Label text="📋  Data Kelompok" styleClass="form-section-title"/>
+
+                    <!-- Nama Ketua -->
+                    <VBox spacing="6">
+                        <Label text="Nama Ketua Kelompok *" styleClass="form-label"/>
+                        <TextField fx:id="tfNamaKetua" styleClass="text-input"
+                                   promptText="Contoh: Budi Santoso"/>
+                    </VBox>
+
+                    <!-- No HP -->
+                    <VBox spacing="6">
+                        <Label text="Nomor HP / WhatsApp *" styleClass="form-label"/>
+                        <TextField fx:id="tfNoHp" styleClass="text-input"
+                                   promptText="Contoh: 08123456789"/>
+                    </VBox>
+
+                    <!-- Jumlah Anggota -->
+                    <HBox spacing="16">
+                        <VBox spacing="6" HBox.hgrow="ALWAYS">
+                            <Label text="Jumlah Anggota *" styleClass="form-label"/>
+                            <Spinner fx:id="spJumlahAnggota" styleClass="spinner-input"
+                                     min="1" max="50" initialValue="2" editable="true" maxWidth="Infinity"/>
+                        </VBox>
+                    </HBox>
+
+                    <!-- Trail -->
+                    <VBox spacing="6">
+                        <Label text="Trail / Rute Pendakian *" styleClass="form-label"/>
+                        <ComboBox fx:id="cbTrail" styleClass="filter-combo" maxWidth="Infinity"
+                                  promptText="Pilih trail..."/>
+                    </VBox>
+
+                    <!-- Tanggal Naik -->
+                    <VBox spacing="6">
+                        <Label text="Tanggal Check-In *" styleClass="form-label"/>
+                        <DatePicker fx:id="dpTanggalNaik" maxWidth="Infinity"/>
+                    </VBox>
+
+                    <!-- Estimasi Turun -->
+                    <VBox spacing="6">
+                        <Label text="Estimasi Turun" styleClass="form-label"/>
+                        <DatePicker fx:id="dpEstimasiTurun" maxWidth="Infinity"/>
+                    </VBox>
+
+                    <!-- Catatan -->
+                    <VBox spacing="6">
+                        <Label text="Catatan" styleClass="form-label"/>
+                        <TextArea fx:id="taCatatan" styleClass="text-input"
+                                  promptText="Catatan tambahan (opsional)..."
+                                  prefHeight="70" wrapText="true"/>
+                    </VBox>
+
+                </VBox>
+
+                <!-- ===== PANEL KANAN: Logistik Sampah ===== -->
+                <VBox styleClass="panel" HBox.hgrow="ALWAYS" spacing="16">
+                    <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="🗂  Logistik Sampah" styleClass="form-section-title"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button text="+ Tambah Item" styleClass="icon-button" onAction="#onAddItem"/>
+                    </HBox>
+
+                    <!-- Item Table -->
+                    <TableView fx:id="itemTable" styleClass="tc-table" VBox.vgrow="ALWAYS" prefHeight="260">
+                        <columns>
+                            <TableColumn fx:id="colItem"     text="Item Sampah"       prefWidth="160"/>
+                            <TableColumn fx:id="colKategori" text="Kategori"           prefWidth="90"  style="-fx-alignment:CENTER;"/>
+                            <TableColumn fx:id="colQty"      text="Qty (bawa naik)"   prefWidth="110" style="-fx-alignment:CENTER;"/>
+                            <TableColumn fx:id="colDeposit"  text="Deposit/Item (Rp)" prefWidth="130" style="-fx-alignment:CENTER_RIGHT;"/>
+                            <TableColumn fx:id="colSubtotal" text="Subtotal (Rp)"     prefWidth="120" style="-fx-alignment:CENTER_RIGHT;"/>
+                            <TableColumn fx:id="colHapus"    text=""                  prefWidth="50"  style="-fx-alignment:CENTER;"/>
+                        </columns>
+                        <placeholder>
+                            <Label text="Klik '+ Tambah Item' untuk menambahkan sampah bawaan." styleClass="section-sub"/>
+                        </placeholder>
+                    </TableView>
+
+                    <!-- Summary Box -->
+                    <VBox styleClass="summary-box" spacing="8">
+                        <padding><Insets top="16" right="16" bottom="16" left="16"/></padding>
+                        <HBox alignment="CENTER_LEFT">
+                            <Label text="💵  Total Deposit yang Harus Dibayar" styleClass="summary-label"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label fx:id="lblTotalDeposit" text="Rp 0" styleClass="summary-value"/>
+                        </HBox>
+                        <Label fx:id="lblDepositDetail" text="0 item · Rp 0 per item rata-rata"
+                               styleClass="panel-subtitle"/>
+                    </VBox>
+
+                    <!-- Action Buttons -->
+                    <HBox spacing="12">
+                        <Button text="✅  Konfirmasi Check-In" styleClass="primary-button"
+                                onAction="#onCheckIn" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                    </HBox>
+
+                    <!-- Hint -->
+                    <Label text="* Pastikan semua item sampah bawaan sudah tercatat sebelum konfirmasi."
+                           styleClass="form-hint" wrapText="true"/>
+
+                </VBox>
+            </HBox>
+        </VBox>
+    </content>
+</ScrollPane>

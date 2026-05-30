@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane fitToWidth="true" styleClass="content-scroll" hbarPolicy="NEVER"
+            xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.trashcamp.frontend.controller.AnalyticsController">
+    <content>
+        <VBox spacing="20">
+            <padding><Insets top="24" right="24" bottom="30" left="24"/></padding>
+
+            <!-- ===== HEADER ===== -->
+            <HBox alignment="CENTER_LEFT">
+                <VBox spacing="4">
+                    <Label text="Sustainability Analytics" styleClass="section-header"/>
+                    <Label text="Laporan lingkungan &amp; kepatuhan sampah pendakian" styleClass="section-sub"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label text="Data: Mei 2026" styleClass="badge-green"/>
+            </HBox>
+
+            <!-- ===== STAT CARDS ===== -->
+            <HBox spacing="16">
+                <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="8" alignment="CENTER_LEFT">
+                    <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                    <Label text="Total Sampah Terkumpul" styleClass="stat-card-label"/>
+                    <Label fx:id="lblTotalWaste" text="450.5 kg" styleClass="stat-card-value"/>
+                    <Label text="Bulan ini" styleClass="stat-card-change-pos"/>
+                </VBox>
+                <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="8" alignment="CENTER_LEFT">
+                    <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                    <Label text="Rata-rata / Pendaki" styleClass="stat-card-label"/>
+                    <Label fx:id="lblAvgWaste" text="1.83 kg" styleClass="stat-card-value"/>
+                    <Label text="Per pendaki" styleClass="stat-card-change-pos"/>
+                </VBox>
+                <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="8" alignment="CENTER_LEFT">
+                    <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                    <Label text="Compliance Rate" styleClass="stat-card-label"/>
+                    <Label fx:id="lblCompliance" text="91.5%" styleClass="stat-card-value"/>
+                    <Label text="Pendaki patuh" styleClass="stat-card-change-pos"/>
+                </VBox>
+                <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="8" alignment="CENTER_LEFT">
+                    <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                    <Label text="Total Denda Terkumpul" styleClass="stat-card-label"/>
+                    <Label fx:id="lblTotalDenda" text="Rp 2,75 Jt" styleClass="stat-card-value"/>
+                    <Label text="Dari item hilang" styleClass="stat-card-change-neg"/>
+                </VBox>
+            </HBox>
+
+            <!-- ===== ECO SCORE + BAR CHART ===== -->
+            <HBox spacing="20">
+                <!-- Eco Score Panel -->
+                <VBox styleClass="panel" prefWidth="300" alignment="CENTER" spacing="14">
+                    <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+                    <Label text="🌿 Eco Compliance Score" styleClass="panel-title"/>
+                    <Label text="Indeks kepatuhan bulan ini" styleClass="panel-subtitle"/>
+
+                    <StackPane>
+                        <Canvas fx:id="ecoCanvas" width="200" height="200"/>
+                    </StackPane>
+
+                    <Label fx:id="lblEcoScore" text="94" styleClass="eco-score-number"/>
+                    <Label text="dari 100 poin" styleClass="eco-score-label"/>
+                    <Label text="🏆 Excellent" styleClass="eco-grade-excellent"/>
+
+                    <!-- Progress Bars per kategori -->
+                    <VBox spacing="8" style="-fx-padding: 10 0 0 0;">
+                        <Label text="DETAIL KATEGORI" styleClass="sidebar-section-label"
+                               style="-fx-text-fill:#8FA899;"/>
+                        <HBox alignment="CENTER_LEFT" spacing="8">
+                            <Label text="Plastik" styleClass="form-label" prefWidth="80"/>
+                            <ProgressBar fx:id="pbPlastik" progress="0.8" HBox.hgrow="ALWAYS" prefHeight="8" styleClass="progress-bar"/>
+                            <Label fx:id="lblPbPlastik" text="80%" styleClass="panel-subtitle" prefWidth="36"/>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="8">
+                            <Label text="Metal" styleClass="form-label" prefWidth="80"/>
+                            <ProgressBar fx:id="pbMetal" progress="0.95" HBox.hgrow="ALWAYS" prefHeight="8" styleClass="progress-bar"/>
+                            <Label fx:id="lblPbMetal" text="95%" styleClass="panel-subtitle" prefWidth="36"/>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="8">
+                            <Label text="Organik" styleClass="form-label" prefWidth="80"/>
+                            <ProgressBar fx:id="pbOrganik" progress="0.92" HBox.hgrow="ALWAYS" prefHeight="8" styleClass="progress-bar"/>
+                            <Label fx:id="lblPbOrganik" text="92%" styleClass="panel-subtitle" prefWidth="36"/>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="8">
+                            <Label text="B3" styleClass="form-label" prefWidth="80"/>
+                            <ProgressBar fx:id="pbB3" progress="0.70" HBox.hgrow="ALWAYS" prefHeight="8" styleClass="progress-bar"/>
+                            <Label fx:id="lblPbB3" text="70%" styleClass="panel-subtitle" prefWidth="36"/>
+                        </HBox>
+                    </VBox>
+                </VBox>
+
+                <!-- Bar Chart: Sampah per Kategori -->
+                <VBox styleClass="panel" HBox.hgrow="ALWAYS" spacing="12">
+                    <padding><Insets top="20" right="20" bottom="16" left="20"/></padding>
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <VBox spacing="2">
+                            <Label text="Distribusi Sampah per Kategori" styleClass="panel-title"/>
+                            <Label text="Berat total (kg) yang terkumpul per jenis sampah" styleClass="panel-subtitle"/>
+                        </VBox>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label text="Mei 2026" styleClass="badge-green"/>
+                    </HBox>
+                    <BarChart fx:id="categoryChart" styleClass="bar-chart"
+                              legendVisible="false" animated="true" VBox.vgrow="ALWAYS" prefHeight="300">
+                        <xAxis>
+                            <CategoryAxis label="Kategori Sampah"/>
+                        </xAxis>
+                        <yAxis>
+                            <NumberAxis label="Berat (kg)" lowerBound="0" upperBound="220"
+                                        tickUnit="50" autoRanging="false"/>
+                        </yAxis>
+                    </BarChart>
+                </VBox>
+            </HBox>
+
+            <!-- ===== TABEL RINGKASAN ===== -->
+            <VBox styleClass="panel" spacing="12">
+                <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                <HBox alignment="CENTER_LEFT">
+                    <Label text="📊 Ringkasan per Kategori" styleClass="panel-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                </HBox>
+                <TableView fx:id="summaryTable" styleClass="tc-table" prefHeight="220">
+                    <columns>
+                        <TableColumn fx:id="colKategori"   text="Kategori"         prefWidth="160"/>
+                        <TableColumn fx:id="colBeratKg"    text="Berat (kg)"       prefWidth="120" style="-fx-alignment:CENTER;"/>
+                        <TableColumn fx:id="colProporsi"   text="Proporsi (%)"     prefWidth="120" style="-fx-alignment:CENTER;"/>
+                        <TableColumn fx:id="colTrendLabel" text="Trend"            prefWidth="120" style="-fx-alignment:CENTER;"/>
+                    </columns>
+                </TableView>
+            </VBox>
+
+        </VBox>
+    </content>
+</ScrollPane>
