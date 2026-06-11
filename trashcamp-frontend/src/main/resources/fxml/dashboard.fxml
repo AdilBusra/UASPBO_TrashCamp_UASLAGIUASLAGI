@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.trashcamp.frontend.controller.DashboardController"
+            styleClass="dashboard-root"
+            prefWidth="1280" prefHeight="780">
+
+    <!-- ========== SIDEBAR ========== -->
+    <left>
+        <VBox styleClass="sidebar" prefWidth="240" spacing="4" BorderPane.alignment="CENTER">
+            <padding><Insets top="22" right="12" bottom="20" left="12"/></padding>
+
+            <!-- Logo -->
+            <VBox styleClass="sidebar-logo-box" alignment="CENTER_LEFT" spacing="2">
+                <Label text="🏕  TrashCamp" styleClass="sidebar-logo-text"/>
+                <Label text="Manajemen Sampah Pendakian" styleClass="sidebar-logo-sub"/>
+            </VBox>
+
+            <Region prefHeight="18"/>
+            <Label text="MENU UTAMA" styleClass="sidebar-section-label"/>
+            <Region prefHeight="2"/>
+
+            <!-- Nav Buttons -->
+            <Button fx:id="btnOverview"   text="📊   Overview"           styleClass="sidebar-button" onAction="#onMenuClicked" maxWidth="Infinity"/>
+            <Button fx:id="btnHikers"     text="👥   Manajemen Pendaki"  styleClass="sidebar-button" onAction="#onMenuClicked" maxWidth="Infinity"/>
+            <Button fx:id="btnCheckIn"    text="✅   Hiker Check-In"     styleClass="sidebar-button" onAction="#onMenuClicked" maxWidth="Infinity"/>
+            <Button fx:id="btnCheckOut"   text="🏁   Check-Out"          styleClass="sidebar-button" onAction="#onMenuClicked" maxWidth="Infinity"/>
+
+            <Region prefHeight="10"/>
+            <Label text="LAPORAN" styleClass="sidebar-section-label"/>
+            <Region prefHeight="2"/>
+
+            <Button fx:id="btnAnalytics"  text="🌿   Analytics"          styleClass="sidebar-button" onAction="#onMenuClicked" maxWidth="Infinity"/>
+            <Button fx:id="btnSettings"   text="⚙   Settings"           styleClass="sidebar-button" onAction="#onMenuClicked" maxWidth="Infinity"/>
+
+            <!-- Spacer -->
+            <VBox VBox.vgrow="ALWAYS"/>
+
+            <!-- Divider -->
+            <Region styleClass="sidebar-divider" maxWidth="Infinity"/>
+            <Region prefHeight="8"/>
+
+            <!-- Logout -->
+            <Button fx:id="btnLogout" text="← Logout" styleClass="sidebar-logout-btn"
+                    onAction="#onLogoutClicked" maxWidth="Infinity"/>
+        </VBox>
+    </left>
+
+    <!-- ========== TOPBAR ========== -->
+    <top>
+        <HBox styleClass="topbar" BorderPane.alignment="CENTER_LEFT"
+              spacing="16" alignment="CENTER_LEFT" prefHeight="68">
+            <padding><Insets top="12" right="24" bottom="12" left="24"/></padding>
+
+            <VBox spacing="2" alignment="CENTER_LEFT">
+                <Label fx:id="lblPageTitle" text="Overview" styleClass="topbar-title"/>
+                <Label fx:id="lblPageSub" text="Dashboard ringkasan" styleClass="topbar-sub"/>
+            </VBox>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <!-- Officer info -->
+            <HBox spacing="10" alignment="CENTER">
+                <Label fx:id="lblTopbarAvatar" text="P" styleClass="topbar-avatar"/>
+                <VBox spacing="2" alignment="CENTER_LEFT">
+                    <Label fx:id="lblOfficerName" text="Petugas" styleClass="topbar-name"/>
+                    <Label text="Petugas Pos Pendakian" styleClass="topbar-role"/>
+                </VBox>
+            </HBox>
+        </HBox>
+    </top>
+
+    <!-- ========== CONTENT AREA ========== -->
+    <center>
+        <StackPane fx:id="contentArea" style="-fx-background-color: #F0FAF5;"/>
+    </center>
+
+</BorderPane>

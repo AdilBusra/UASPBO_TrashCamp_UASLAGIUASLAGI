@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.trashcamp.frontend.controller.CheckOutController"
+      spacing="0" style="-fx-background-color: #F0FAF5;">
+
+    <ScrollPane fitToWidth="true" styleClass="content-scroll" hbarPolicy="NEVER" VBox.vgrow="ALWAYS">
+        <content>
+            <VBox spacing="20">
+                <padding><Insets top="24" right="24" bottom="30" left="24"/></padding>
+
+                <!-- ===== HEADER ===== -->
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <VBox spacing="4">
+                        <Label text="Check-Out &amp; Verifikasi" styleClass="section-header"/>
+                        <Label text="Verifikasi sampah kembali &amp; hitung denda otomatis" styleClass="section-sub"/>
+                    </VBox>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="Reset" styleClass="secondary-button" onAction="#onReset"/>
+                </HBox>
+
+                <!-- ===== PILIH KELOMPOK ===== -->
+                <VBox styleClass="panel" spacing="14">
+                    <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                    <Label text="👥  Pilih Kelompok Pendaki" styleClass="form-section-title"/>
+
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <VBox spacing="6" HBox.hgrow="ALWAYS">
+                            <Label text="Kelompok Aktif" styleClass="form-label"/>
+                            <ComboBox fx:id="cbPendakian" styleClass="filter-combo"
+                                      maxWidth="Infinity" promptText="Pilih kelompok yang turun..."
+                                      onAction="#onPendakianSelected"/>
+                        </VBox>
+                        <Button text="Muat Data →" styleClass="icon-button"
+                                onAction="#onLoadData" prefHeight="38" prefWidth="120"
+                                VBox.vgrow="ALWAYS"/>
+                    </HBox>
+
+                    <!-- Info Kelompok (muncul saat dipilih) -->
+                    <HBox fx:id="infoBox" spacing="20" alignment="CENTER_LEFT"
+                          visible="false" managed="false">
+                        <padding><Insets top="10" right="0" bottom="0" left="0"/></padding>
+                        <VBox spacing="4" HBox.hgrow="ALWAYS">
+                            <Label text="Nama Ketua" styleClass="form-label"/>
+                            <Label fx:id="lblKetua" text="-" style="-fx-font-size:15px;-fx-font-weight:bold;-fx-text-fill:#0B2B1D;"/>
+                        </VBox>
+                        <VBox spacing="4">
+                            <Label text="Jumlah Anggota" styleClass="form-label"/>
+                            <Label fx:id="lblAnggota" text="-" style="-fx-font-size:15px;-fx-font-weight:bold;-fx-text-fill:#0B2B1D;"/>
+                        </VBox>
+                        <VBox spacing="4">
+                            <Label text="Trail" styleClass="form-label"/>
+                            <Label fx:id="lblTrail" text="-" style="-fx-font-size:15px;-fx-font-weight:bold;-fx-text-fill:#0B2B1D;"/>
+                        </VBox>
+                        <VBox spacing="4">
+                            <Label text="Waktu Naik" styleClass="form-label"/>
+                            <Label fx:id="lblWaktuNaik" text="-" style="-fx-font-size:14px;-fx-text-fill:#0B2B1D;"/>
+                        </VBox>
+                        <VBox spacing="4">
+                            <Label text="Deposit Disetor" styleClass="form-label"/>
+                            <Label fx:id="lblDepositAwal" text="-" style="-fx-font-size:15px;-fx-font-weight:bold;-fx-text-fill:#0F8A5B;"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+
+                <!-- ===== VERIFIKASI SAMPAH (muncul saat kelompok dipilih) ===== -->
+                <VBox fx:id="verifikasiBox" styleClass="panel" spacing="16"
+                      visible="false" managed="false">
+                    <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="🗂  Verifikasi Item Sampah" styleClass="form-section-title"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label text="Ubah 'Qty Turun' sesuai jumlah sampah yang dikembalikan"
+                               styleClass="panel-subtitle"/>
+                    </HBox>
+
+                    <!-- Verifikasi Table -->
+                    <TableView fx:id="verifikasiTable" styleClass="tc-table" prefHeight="240">
+                        <columns>
+                            <TableColumn fx:id="colNamaItem"   text="Item Sampah"    prefWidth="160"/>
+                            <TableColumn fx:id="colKategori"   text="Kategori"       prefWidth="90"  style="-fx-alignment:CENTER;"/>
+                            <TableColumn fx:id="colQtyNaik"    text="Bawa Naik"      prefWidth="90"  style="-fx-alignment:CENTER;"/>
+                            <TableColumn fx:id="colQtyTurun"   text="Kembali (edit)" prefWidth="110" style="-fx-alignment:CENTER;"/>
+                            <TableColumn fx:id="colHilang"     text="Hilang"         prefWidth="80"  style="-fx-alignment:CENTER;"/>
+                            <TableColumn fx:id="colDenda"      text="Denda (Rp)"     prefWidth="120" style="-fx-alignment:CENTER_RIGHT;"/>
+                        </columns>
+                        <placeholder>
+                            <Label text="Pilih kelompok pendakian terlebih dahulu." styleClass="section-sub"/>
+                        </placeholder>
+                    </TableView>
+
+                    <!-- ===== SUMMARY ROW ===== -->
+                    <HBox spacing="16">
+                        <!-- Deposit Disetor -->
+                        <VBox styleClass="summary-box" HBox.hgrow="ALWAYS" spacing="6" alignment="CENTER">
+                            <padding><Insets top="16" right="16" bottom="16" left="16"/></padding>
+                            <Label text="💵 Deposit Disetor" styleClass="summary-label"/>
+                            <Label fx:id="lblSummaryDeposit" text="Rp 0" styleClass="summary-value"/>
+                        </VBox>
+
+                        <!-- Total Denda -->
+                        <VBox styleClass="denda-box" HBox.hgrow="ALWAYS" spacing="6" alignment="CENTER">
+                            <padding><Insets top="16" right="16" bottom="16" left="16"/></padding>
+                            <Label text="⚠ Total Denda" styleClass="denda-label"/>
+                            <Label fx:id="lblTotalDenda" text="Rp 0" styleClass="denda-value"/>
+                        </VBox>
+
+                        <!-- Net Kembalian -->
+                        <VBox fx:id="netBox" styleClass="summary-box" HBox.hgrow="ALWAYS" spacing="6" alignment="CENTER">
+                            <padding><Insets top="16" right="16" bottom="16" left="16"/></padding>
+                            <Label text="↩ Kembalian Deposit" styleClass="summary-label"/>
+                            <Label fx:id="lblKembalian" text="Rp 0" styleClass="summary-value"/>
+                        </VBox>
+                    </HBox>
+
+                    <!-- ===== ACTION BUTTONS ===== -->
+                    <HBox spacing="12">
+                        <Button text="🔄  Hitung Ulang Denda" styleClass="secondary-button"
+                                onAction="#onHitungDenda"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button text="✅  Konfirmasi Check-Out" styleClass="primary-button"
+                                onAction="#onCheckOut" prefWidth="220"/>
+                    </HBox>
+
+                </VBox>
+            </VBox>
+        </content>
+    </ScrollPane>
+</VBox>

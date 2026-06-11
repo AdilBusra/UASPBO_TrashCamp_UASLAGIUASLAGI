@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane fitToWidth="true" styleClass="content-scroll" hbarPolicy="NEVER"
+            xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.trashcamp.frontend.controller.SettingsController">
+    <content>
+        <VBox spacing="20">
+            <padding><Insets top="24" right="24" bottom="30" left="24"/></padding>
+
+            <!-- ===== HEADER ===== -->
+            <HBox alignment="CENTER_LEFT">
+                <VBox spacing="4">
+                    <Label text="System Settings" styleClass="section-header"/>
+                    <Label text="Konfigurasi profil petugas, harga, dan preferensi sistem" styleClass="section-sub"/>
+                </VBox>
+            </HBox>
+
+            <!-- ===== TAB PANE ===== -->
+            <TabPane fx:id="settingsTab" styleClass="tab-pane" tabClosingPolicy="UNAVAILABLE">
+
+                <!-- ===== TAB 1: Profil Petugas ===== -->
+                <Tab text="👤  Profil Petugas">
+                    <content>
+                        <HBox spacing="20">
+                            <padding><Insets top="24" right="0" bottom="0" left="0"/></padding>
+
+                            <!-- Avatar / Info Card -->
+                            <VBox styleClass="panel" prefWidth="260" alignment="CENTER" spacing="16">
+                                <padding><Insets top="30" right="24" bottom="30" left="24"/></padding>
+                                <Label fx:id="lblAvatarBig" text="A"
+                                       style="-fx-background-color:#0F8A5B;-fx-background-radius:999;-fx-text-fill:white;-fx-font-size:40px;-fx-font-weight:bold;-fx-min-width:90;-fx-min-height:90;-fx-max-width:90;-fx-max-height:90;-fx-alignment:center;"/>
+                                <Label fx:id="lblNamaBig" text="Admin Petugas"
+                                       style="-fx-font-size:16px;-fx-font-weight:bold;-fx-text-fill:#0B2B1D;-fx-wrap-text:true;"
+                                       alignment="CENTER" textAlignment="CENTER"/>
+                                <Label text="Petugas Pos Pendakian" styleClass="panel-subtitle"/>
+                                <Label fx:id="lblStasiunBig" text="Pos Ranu Kumbolo" styleClass="badge-green"/>
+                            </VBox>
+
+                            <!-- Form Edit Profil -->
+                            <VBox styleClass="panel" HBox.hgrow="ALWAYS" spacing="18">
+                                <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+                                <Label text="Edit Profil Petugas" styleClass="form-section-title"/>
+
+                                <HBox spacing="16">
+                                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                        <Label text="Nama Lengkap *" styleClass="form-label"/>
+                                        <TextField fx:id="tfNamaPetugas" styleClass="text-input"
+                                                   promptText="Nama petugas"/>
+                                    </VBox>
+                                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                        <Label text="NIP / ID Petugas" styleClass="form-label"/>
+                                        <TextField fx:id="tfNip" styleClass="text-input"
+                                                   promptText="Contoh: NIP-2026-001"/>
+                                    </VBox>
+                                </HBox>
+
+                                <VBox spacing="6">
+                                    <Label text="Nama Stasiun / Pos" styleClass="form-label"/>
+                                    <TextField fx:id="tfStasiun" styleClass="text-input"
+                                               promptText="Contoh: Pos Ranu Kumbolo"/>
+                                </VBox>
+
+                                <VBox spacing="6">
+                                    <Label text="Username Login" styleClass="form-label"/>
+                                    <TextField fx:id="tfUsername" styleClass="text-input"
+                                               promptText="Username" editable="false"
+                                               style="-fx-opacity:0.7;"/>
+                                </VBox>
+
+                                <HBox spacing="12" alignment="CENTER_LEFT">
+                                    <Button text="💾  Simpan Perubahan" styleClass="primary-button"
+                                            onAction="#onSaveProfil"/>
+                                    <Button text="Reset" styleClass="secondary-button"
+                                            onAction="#onResetProfil"/>
+                                </HBox>
+
+                                <Label fx:id="lblProfilStatus" text="" styleClass="badge-green"
+                                       visible="false" managed="false"/>
+                            </VBox>
+                        </HBox>
+                    </content>
+                </Tab>
+
+                <!-- ===== TAB 2: Konfigurasi Harga ===== -->
+                <Tab text="💰  Konfigurasi Harga">
+                    <content>
+                        <VBox spacing="16">
+                            <padding><Insets top="24" right="0" bottom="0" left="0"/></padding>
+
+                            <VBox styleClass="panel" spacing="14">
+                                <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+
+                                <HBox alignment="CENTER_LEFT" spacing="12">
+                                    <VBox spacing="4">
+                                        <Label text="Tarif Deposit &amp; Denda" styleClass="form-section-title"/>
+                                        <Label text="Ubah nominal deposit dan denda per jenis sampah"
+                                               styleClass="panel-subtitle"/>
+                                    </VBox>
+                                    <Region HBox.hgrow="ALWAYS"/>
+                                    <Button text="💾  Simpan Konfigurasi" styleClass="primary-button"
+                                            onAction="#onSaveHarga"/>
+                                </HBox>
+
+                                <TableView fx:id="hargaTable" styleClass="tc-table" prefHeight="380">
+                                    <columns>
+                                        <TableColumn fx:id="colNamaItem"   text="Nama Item"       prefWidth="180"/>
+                                        <TableColumn fx:id="colKategoriH"  text="Kategori"        prefWidth="100" style="-fx-alignment:CENTER;"/>
+                                        <TableColumn fx:id="colDeposit"    text="Deposit/Item (Rp)" prefWidth="160" style="-fx-alignment:CENTER_RIGHT;"/>
+                                        <TableColumn fx:id="colDendaH"     text="Denda/Item (Rp)"  prefWidth="160" style="-fx-alignment:CENTER_RIGHT;"/>
+                                        <TableColumn fx:id="colAktif"      text="Aktif"            prefWidth="80"  style="-fx-alignment:CENTER;"/>
+                                    </columns>
+                                </TableView>
+
+                                <Label fx:id="lblHargaStatus" text="" styleClass="badge-green"
+                                       visible="false" managed="false"/>
+                            </VBox>
+                        </VBox>
+                    </content>
+                </Tab>
+
+                <!-- ===== TAB 3: Preferensi Sistem ===== -->
+                <Tab text="⚙  Preferensi">
+                    <content>
+                        <VBox spacing="16">
+                            <padding><Insets top="24" right="0" bottom="0" left="0"/></padding>
+
+                            <VBox styleClass="panel" spacing="18">
+                                <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+                                <Label text="Informasi Pos Pendakian" styleClass="form-section-title"/>
+
+                                <VBox spacing="6">
+                                    <Label text="Nama Pos / Stasiun" styleClass="form-label"/>
+                                    <TextField fx:id="tfNamaStasiun" styleClass="text-input"
+                                               promptText="Contoh: Pos Pendakian Ranu Kumbolo"/>
+                                </VBox>
+
+                                <HBox spacing="12">
+                                    <Button text="💾  Simpan" styleClass="primary-button"
+                                            onAction="#onSaveStasiun"/>
+                                    <Label fx:id="lblStasiunStatus" text="" styleClass="badge-green"
+                                           visible="false" managed="false"/>
+                                </HBox>
+                            </VBox>
+
+                            <VBox styleClass="panel" spacing="16">
+                                <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+                                <Label text="Tentang Aplikasi" styleClass="form-section-title"/>
+                                <HBox spacing="20">
+                                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                                        <Label text="Aplikasi" styleClass="form-label"/>
+                                        <Label text="TrashCamp — Manajemen Sampah Pendakian" styleClass="panel-subtitle"/>
+                                    </VBox>
+                                    <VBox spacing="4">
+                                        <Label text="Versi" styleClass="form-label"/>
+                                        <Label text="1.0.0-SNAPSHOT" styleClass="panel-subtitle"/>
+                                    </VBox>
+                                    <VBox spacing="4">
+                                        <Label text="Tema" styleClass="form-label"/>
+                                        <Label text="Sosial / Tourism" styleClass="badge-green"/>
+                                    </VBox>
+                                </HBox>
+                            </VBox>
+                        </VBox>
+                    </content>
+                </Tab>
+
+            </TabPane>
+        </VBox>
+    </content>
+</ScrollPane>

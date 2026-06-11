@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.trashcamp.frontend.controller.HikerManagementController"
+      spacing="0" style="-fx-background-color: #F0FAF5;">
+
+    <!-- ===== TOOLBAR ===== -->
+    <VBox spacing="16">
+        <padding><Insets top="24" right="24" bottom="0" left="24"/></padding>
+
+        <!-- Header Row -->
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <VBox spacing="4">
+                <Label text="Daftar Pendaki" styleClass="section-header"/>
+                <Label fx:id="lblTotal" text="Menampilkan semua data pendakian" styleClass="section-sub"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="+ New Check-In" styleClass="primary-button"
+                    onAction="#onNewCheckIn" prefHeight="36"/>
+        </HBox>
+
+        <!-- Search & Filter Row -->
+        <HBox spacing="12" alignment="CENTER_LEFT">
+            <TextField fx:id="tfSearch" styleClass="search-field"
+                       promptText="🔍  Cari nama ketua / trail..."
+                       prefWidth="300" onKeyReleased="#onSearch"/>
+
+            <ComboBox fx:id="cbFilterStatus" styleClass="filter-combo"
+                      prefWidth="160" onAction="#onFilterChange"/>
+
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="lblResultCount" text="" styleClass="section-sub"/>
+        </HBox>
+    </VBox>
+
+    <!-- ===== TABLE PANEL ===== -->
+    <VBox styleClass="panel" VBox.vgrow="ALWAYS" spacing="0">
+        <VBox.margin><Insets top="16" right="24" bottom="24" left="24"/></VBox.margin>
+
+        <TableView fx:id="hikersTable" styleClass="tc-table" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="colNo"       text="No"             prefWidth="50"  style="-fx-alignment:CENTER;"/>
+                <TableColumn fx:id="colNama"      text="Nama Ketua"     prefWidth="180"/>
+                <TableColumn fx:id="colAnggota"   text="Anggota"        prefWidth="80"  style="-fx-alignment:CENTER;"/>
+                <TableColumn fx:id="colTrail"     text="Trail"          prefWidth="170"/>
+                <TableColumn fx:id="colStatus"    text="Status"         prefWidth="110" style="-fx-alignment:CENTER;"/>
+                <TableColumn fx:id="colWaktuNaik" text="Waktu Naik"     prefWidth="160"/>
+                <TableColumn fx:id="colDeposit"   text="Deposit (Rp)"   prefWidth="130" style="-fx-alignment:CENTER_RIGHT;"/>
+                <TableColumn fx:id="colAksi"      text="Aksi"           prefWidth="120" style="-fx-alignment:CENTER;"/>
+            </columns>
+            <placeholder>
+                <Label text="Tidak ada data pendakian ditemukan." styleClass="section-sub"/>
+            </placeholder>
+        </TableView>
+
+    </VBox>
+
+</VBox>
