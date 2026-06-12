@@ -26,7 +26,15 @@ import java.util.Locale;
  */
 public class CheckOutController implements ContentController {
 
-    @FXML private ComboBox<Pendakian> cbPendakian;
+    @FXML private TextField tfSearchActive;
+    @FXML private TableView<Pendakian> tblActiveGroups;
+    @FXML private TableColumn<Pendakian, Number> colActiveId;
+    @FXML private TableColumn<Pendakian, String> colActiveKetua;
+    @FXML private TableColumn<Pendakian, Number> colActiveAnggota;
+    @FXML private TableColumn<Pendakian, String> colActiveTrail;
+    @FXML private TableColumn<Pendakian, String> colActiveDeposit;
+    @FXML private TableColumn<Pendakian, String> colActiveWaktuNaik;
+
     @FXML private Label lblKetua;
     @FXML private Label lblAnggota;
     @FXML private Label lblTrail;
@@ -46,6 +54,10 @@ public class CheckOutController implements ContentController {
     @FXML private Label lblSummaryDeposit;
     @FXML private Label lblTotalDenda;
     @FXML private Label lblKembalian;
+    @FXML private Label lblPembayaranTambahan;
+
+    private ObservableList<Pendakian> allActiveGroups;
+    private javafx.collections.transformation.FilteredList<Pendakian> filteredActiveGroups;
 
     private OfficerSession session;
     private final HikerService hikerService = new HttpHikerService();
@@ -62,36 +74,53 @@ public class CheckOutController implements ContentController {
     @Override
     public void initData() {
         verifikasiData = FXCollections.observableArrayList();
+        setupActiveGroupsTable();
         loadAktifPendakian();
         setupTable();
     }
 
-    private void loadAktifPendakian() {
-        if (cbPendakian == null) return;
-        List<Pendakian> aktif = hikerService.getAktifPendakian();
-        cbPendakian.setItems(FXCollections.observableArrayList(aktif));
-        cbPendakian.setConverter(new javafx.util.StringConverter<>() {
-            @Override public String toString(Pendakian p) {
-                return p == null ? "" : "[" + p.getId() + "] " + p.getNamaKetua() + " — " + p.getTrail();
+    private void setupActiveGroupsTable() {
+        if (tblActiveGroups == null) return;
+
+        colActiveId.setCellValueFactory(d -> new SimpleIntegerProperty(d.getValue().getId()));
+        colActiveKetua.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getNamaKetua()));
+        colActiveAnggota.setCellValueFactory(d -> new SimpleIntegerProperty(d.getValue().getJumlahAnggota()));
+        colActiveTrail.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getTrail()));
+        colActiveDeposit.setCellValueFactory(d -> new SimpleStringProperty("Rp " + nf.format((long) d.getValue().getTotalDeposit())));
+        colActiveWaktuNaik.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getWaktuNaik()));
+
+        tblActiveGroups.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                selectedPendakian = newVal;
+                updateInfoBox(selectedPendakian);
+                loadVerifikasiData(selectedPendakian.getId());
             }
-            @Override public Pendakian fromString(String s) { return null; }
         });
     }
 
-    @FXML
-    private void onPendakianSelected() {
-        // Preview saat dipilih tapi belum muat data
-    }
+    private void loadAktifPendakian() {
+        if (tblActiveGroups == null) return;
+        List<Pendakian> aktif = hikerService.getAktifPendakian();
+        allActiveGroups = FXCollections.observableArrayList(aktif);
+        filteredActiveGroups = new javafx.collections.transformation.FilteredList<>(allActiveGroups, p -> true);
 
-    @FXML
-    private void onLoadData() {
-        selectedPendakian = cbPendakian != null ? cbPendakian.getValue() : null;
-        if (selectedPendakian == null) {
-            showAlert(Alert.AlertType.WARNING, "Pilih kelompok pendakian terlebih dahulu.");
-            return;
+        if (tfSearchActive != null) {
+            tfSearchActive.textProperty().addListener((observable, oldValue, newValue) -> {
+                filteredActiveGroups.setPredicate(group -> {
+                    if (newValue == null || newValue.isBlank()) {
+                        return true;
+                    }
+                    String lowerCaseFilter = newValue.toLowerCase();
+                    if (group.getNamaKetua() != null && group.getNamaKetua().toLowerCase().contains(lowerCaseFilter)) {
+                        return true;
+                    } else if (group.getTrail() != null && group.getTrail().toLowerCase().contains(lowerCaseFilter)) {
+                        return true;
+                    }
+                    return false;
+                });
+            });
         }
-        updateInfoBox(selectedPendakian);
-        loadVerifikasiData(selectedPendakian.getId());
+        tblActiveGroups.setItems(filteredActiveGroups);
     }
 
     private void updateInfoBox(Pendakian p) {
@@ -184,6 +213,7 @@ public class CheckOutController implements ContentController {
         double deposit = selectedPendakian != null ? selectedPendakian.getTotalDeposit() : 0;
         double denda = checkOutService.hitungTotalDenda(list);
         double kembalian = deposit - denda;
+        double tambahan = denda - deposit;
 
         if (lblSummaryDeposit != null)
             lblSummaryDeposit.setText("Rp " + nf.format((long) deposit));
@@ -191,6 +221,8 @@ public class CheckOutController implements ContentController {
             lblTotalDenda.setText("Rp " + nf.format((long) denda));
         if (lblKembalian != null)
             lblKembalian.setText("Rp " + nf.format((long) Math.max(0, kembalian)));
+        if (lblPembayaranTambahan != null)
+            lblPembayaranTambahan.setText("Rp " + nf.format((long) Math.max(0, tambahan)));
     }
 
     @FXML
@@ -203,13 +235,15 @@ public class CheckOutController implements ContentController {
         double denda = checkOutService.hitungTotalDenda(list);
         double deposit = selectedPendakian.getTotalDeposit();
         double kembalian = Math.max(0, deposit - denda);
+        double tambahan = Math.max(0, denda - deposit);
 
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
-                String.format("Konfirmasi Check-Out:%n%nKelompok : %s%nDeposit  : Rp %s%nDenda    : Rp %s%nKembalian: Rp %s%n%nLanjutkan?",
+                String.format("Konfirmasi Check-Out:%n%nKelompok : %s%nDeposit  : Rp %s%nDenda    : Rp %s%nKembalian: Rp %s%nPembayaran Tambahan: Rp %s%n%nLanjutkan?",
                         selectedPendakian.getNamaKetua(),
                         nf.format((long) deposit),
                         nf.format((long) denda),
-                        nf.format((long) kembalian)),
+                        nf.format((long) kembalian),
+                        nf.format((long) tambahan)),
                 ButtonType.YES, ButtonType.NO);
         confirm.setTitle("Konfirmasi Check-Out");
         confirm.setHeaderText(null);
@@ -227,13 +261,14 @@ public class CheckOutController implements ContentController {
 
     @FXML
     private void onReset() {
-        if (cbPendakian != null) cbPendakian.setValue(null);
+        if (tfSearchActive != null) tfSearchActive.clear();
+        if (tblActiveGroups != null) tblActiveGroups.getSelectionModel().clearSelection();
         if (infoBox != null) { infoBox.setVisible(false); infoBox.setManaged(false); }
         if (verifikasiBox != null) { verifikasiBox.setVisible(false); verifikasiBox.setManaged(false); }
         verifikasiData = FXCollections.observableArrayList();
         verifikasiTable.setItems(verifikasiData);
         selectedPendakian = null;
-        loadAktifPendakian(); // reload dropdown
+        loadAktifPendakian(); // reload table
     }
 
     private void showAlert(Alert.AlertType type, String msg) {

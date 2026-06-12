@@ -3,8 +3,8 @@ package com.trashcamp.frontend.controller;
 import com.trashcamp.frontend.model.OfficerSession;
 import com.trashcamp.frontend.model.RecentActivityItem;
 import com.trashcamp.frontend.service.DashboardService;
-import com.trashcamp.frontend.service.DummyAnalyticsService;
-import com.trashcamp.frontend.service.DummyDashboardService;
+import com.trashcamp.frontend.service.HttpAnalyticsService;
+import com.trashcamp.frontend.service.HttpDashboardService;
 import com.trashcamp.frontend.service.AnalyticsService;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -41,8 +41,8 @@ public class OverviewController implements ContentController {
     @FXML private ListView<String> lvRecentActivity;
 
     private OfficerSession session;
-    private final DashboardService dashboardService = new DummyDashboardService();
-    private final AnalyticsService analyticsService = new DummyAnalyticsService();
+    private final DashboardService dashboardService = new HttpDashboardService();
+    private final AnalyticsService analyticsService = new HttpAnalyticsService();
 
     @Override
     public void setSession(OfficerSession session) {
@@ -64,7 +64,7 @@ public class OverviewController implements ContentController {
         if (lblTotalHikers != null)
             lblTotalHikers.setText(nf.format(stats.getTotalHikers()));
         if (lblTotalWaste != null)
-            lblTotalWaste.setText(nf.format(stats.getBagsTracked()) + " kg");
+            lblTotalWaste.setText(nf.format(stats.getBagsTracked()));
         if (lblActiveTrips != null)
             lblActiveTrips.setText(String.valueOf(stats.getActiveTrips()));
         if (lblTotalDeposit != null) {

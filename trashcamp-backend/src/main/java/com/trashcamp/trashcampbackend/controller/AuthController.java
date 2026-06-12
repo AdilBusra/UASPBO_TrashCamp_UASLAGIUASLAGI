@@ -21,10 +21,13 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Petugas loginReq) {
         Optional<Petugas> opt = petugasRepository.findByUsername(loginReq.getUsername());
-        if (opt.isPresent() && opt.get().getPassword().equals(loginReq.getPassword())) {
-            return ResponseEntity.ok(opt.get());
+        if (!opt.isPresent()) {
+            return ResponseEntity.status(404).body("Akun belum ditemukan, silakan registrasi terlebih dahulu");
         }
-        return ResponseEntity.status(401).body("Username atau password salah.");
+        if (!opt.get().getPassword().equals(loginReq.getPassword())) {
+            return ResponseEntity.status(401).body("Username atau password salah.");
+        }
+        return ResponseEntity.ok(opt.get());
     }
 
     @PostMapping("/register")

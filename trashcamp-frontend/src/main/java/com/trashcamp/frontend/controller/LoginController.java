@@ -84,7 +84,11 @@ public class LoginController {
             if (errMsg == null || errMsg.isBlank() || errMsg.contains("Connection refused")) {
                 errMsg = "Tidak dapat terhubung ke server backend (offline).";
             }
-            showError("Gagal Masuk: " + errMsg);
+            if (errMsg.contains("Akun belum ditemukan") || errMsg.contains("silakan registrasi")) {
+                showError(errMsg);
+            } else {
+                showError("Gagal Masuk: " + errMsg);
+            }
             shakeError();
         }
     }
