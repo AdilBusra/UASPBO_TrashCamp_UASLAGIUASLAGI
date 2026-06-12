@@ -1,5 +1,7 @@
 package com.trashcamp.frontend.model;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Model untuk jenis sampah beserta tarif deposit dan denda.
  * Menerapkan Encapsulation: semua field private, akses via getter/setter.
@@ -9,8 +11,14 @@ public class MasterSampah {
     private int id;
     private String namaItem;
     private String kategori; // Plastik, Organik, Metal, Kaca, Lainnya
+
+    @SerializedName("tarifDeposit")
     private double depositPerItem;
+
+    @SerializedName("tarifDenda")
     private double dendaPerItem;
+
+    private boolean aktif = true;
 
     public MasterSampah() {}
 
@@ -21,6 +29,17 @@ public class MasterSampah {
         this.kategori = kategori;
         this.depositPerItem = depositPerItem;
         this.dendaPerItem = dendaPerItem;
+        this.aktif = true;
+    }
+
+    public MasterSampah(int id, String namaItem, String kategori,
+                        double depositPerItem, double dendaPerItem, boolean aktif) {
+        this.id = id;
+        this.namaItem = namaItem;
+        this.kategori = kategori;
+        this.depositPerItem = depositPerItem;
+        this.dendaPerItem = dendaPerItem;
+        this.aktif = aktif;
     }
 
     // --- Getters ---
@@ -29,6 +48,7 @@ public class MasterSampah {
     public String getKategori() { return kategori; }
     public double getDepositPerItem() { return depositPerItem; }
     public double getDendaPerItem() { return dendaPerItem; }
+    public boolean isAktif() { return aktif; }
 
     // --- Setters ---
     public void setId(int id) { this.id = id; }
@@ -36,6 +56,7 @@ public class MasterSampah {
     public void setKategori(String kategori) { this.kategori = kategori; }
     public void setDepositPerItem(double depositPerItem) { this.depositPerItem = depositPerItem; }
     public void setDendaPerItem(double dendaPerItem) { this.dendaPerItem = dendaPerItem; }
+    public void setAktif(boolean aktif) { this.aktif = aktif; }
 
     @Override
     public String toString() {

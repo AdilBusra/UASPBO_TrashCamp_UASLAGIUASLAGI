@@ -1,5 +1,7 @@
 package com.trashcamp.frontend.model;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Model untuk data kelompok pendakian.
  * Menerapkan Encapsulation: semua field private, akses via getter/setter.
@@ -8,12 +10,20 @@ public class Pendakian {
 
     private int id;
     private String namaKetua;
+
+    @SerializedName("nomorHp")
     private String noHp;
+
     private int jumlahAnggota;
     private String trail;
     private String status; // "AKTIF", "SELESAI", "DENDA"
+
+    @SerializedName("waktuCheckIn")
     private String waktuNaik;
+
+    @SerializedName("waktuCheckOut")
     private String waktuTurun;
+
     private double totalDeposit;
     private double totalDenda;
 
@@ -41,8 +51,21 @@ public class Pendakian {
     public int getJumlahAnggota() { return jumlahAnggota; }
     public String getTrail() { return trail; }
     public String getStatus() { return status; }
-    public String getWaktuNaik() { return waktuNaik; }
-    public String getWaktuTurun() { return waktuTurun; }
+    
+    public String getWaktuNaik() { 
+        if (waktuNaik != null && waktuNaik.contains("T")) {
+            return waktuNaik.replace("T", " ").substring(0, 16);
+        }
+        return waktuNaik != null ? waktuNaik : "-"; 
+    }
+    
+    public String getWaktuTurun() { 
+        if (waktuTurun != null && waktuTurun.contains("T")) {
+            return waktuTurun.replace("T", " ").substring(0, 16);
+        }
+        return waktuTurun != null ? waktuTurun : "-"; 
+    }
+    
     public double getTotalDeposit() { return totalDeposit; }
     public double getTotalDenda() { return totalDenda; }
 

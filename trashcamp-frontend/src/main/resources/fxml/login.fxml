@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
@@ -90,9 +91,14 @@
                     <Button text="Masuk ke Dashboard →" styleClass="primary-button"
                             maxWidth="Infinity" onAction="#onLoginClicked"/>
 
+                    <HBox alignment="CENTER" spacing="5">
+                        <Label text="Belum memiliki akun?" styleClass="login-hint" style="-fx-font-size: 12px;"/>
+                        <Hyperlink text="Daftar Pos Baru" onAction="#onRegisterClicked" style="-fx-text-fill:#0F8A5B;-fx-font-weight:bold;-fx-underline:true;-fx-padding:0;"/>
+                    </HBox>
+
                     <!-- Hint -->
                     <Label styleClass="login-hint"
-                           text="Tahap ini: login berhasil jika username &amp; password tidak kosong."
+                           text="Gunakan user bawaan (adminpos1 / rahasia123) atau buat akun pos baru."
                            wrapText="true" alignment="CENTER" textAlignment="CENTER"/>
                 </VBox>
             </VBox>

@@ -4,8 +4,8 @@ import com.trashcamp.frontend.model.DetailSampah;
 import com.trashcamp.frontend.model.OfficerSession;
 import com.trashcamp.frontend.model.Pendakian;
 import com.trashcamp.frontend.service.CheckOutService;
-import com.trashcamp.frontend.service.DummyCheckOutService;
-import com.trashcamp.frontend.service.DummyHikerService;
+import com.trashcamp.frontend.service.HttpCheckOutService;
+import com.trashcamp.frontend.service.HttpHikerService;
 import com.trashcamp.frontend.service.HikerService;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -32,7 +32,7 @@ public class CheckOutController implements ContentController {
     @FXML private Label lblTrail;
     @FXML private Label lblWaktuNaik;
     @FXML private Label lblDepositAwal;
-    @FXML private javafx.scene.layout.VBox infoBox;
+    @FXML private javafx.scene.layout.HBox infoBox; // FIXED: Changed VBox to HBox to match FXML class type
     @FXML private javafx.scene.layout.VBox verifikasiBox;
 
     @FXML private TableView<DetailSampah> verifikasiTable;
@@ -48,8 +48,8 @@ public class CheckOutController implements ContentController {
     @FXML private Label lblKembalian;
 
     private OfficerSession session;
-    private final HikerService hikerService = new DummyHikerService();
-    private final CheckOutService checkOutService = new DummyCheckOutService();
+    private final HikerService hikerService = new HttpHikerService();
+    private final CheckOutService checkOutService = new HttpCheckOutService();
     private ObservableList<DetailSampah> verifikasiData;
     private Pendakian selectedPendakian;
     private final NumberFormat nf = NumberFormat.getNumberInstance(new Locale("id", "ID"));
@@ -233,6 +233,7 @@ public class CheckOutController implements ContentController {
         verifikasiData = FXCollections.observableArrayList();
         verifikasiTable.setItems(verifikasiData);
         selectedPendakian = null;
+        loadAktifPendakian(); // reload dropdown
     }
 
     private void showAlert(Alert.AlertType type, String msg) {

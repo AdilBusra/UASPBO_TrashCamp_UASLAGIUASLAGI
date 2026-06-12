@@ -5,13 +5,16 @@ import com.trashcamp.frontend.model.MasterSampah;
 import com.trashcamp.frontend.model.OfficerSession;
 import com.trashcamp.frontend.model.Pendakian;
 import com.trashcamp.frontend.service.CheckInService;
-import com.trashcamp.frontend.service.DummyCheckInService;
+import com.trashcamp.frontend.service.HttpCheckInService;
+import com.trashcamp.frontend.service.HttpSettingsService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.GridPane;
+import javafx.util.Pair;
 
 import java.text.NumberFormat;
 import java.time.LocalDate;
@@ -21,7 +24,7 @@ import java.util.Locale;
 
 /**
  * Controller untuk halaman Hiker Check-In.
- * Menangani form data kelompok + logistik sampah + kalkulasi deposit.
+ * Menangani form data kelompok + logistik sampah + kalkulasi deposit & biaya masuk.
  */
 public class CheckInController implements ContentController {
 
@@ -43,11 +46,13 @@ public class CheckInController implements ContentController {
     @FXML private TableColumn<DetailSampah, String>  colSubtotal;
     @FXML private TableColumn<DetailSampah, Void>    colHapus;
 
-    @FXML private Label lblTotalDeposit;
-    @FXML private Label lblDepositDetail;
+    // --- Summary Labels ---
+    @FXML private Label lblTotalDeposit;      // Kita gunakan ini untuk Total Pembayaran Awal
+    @FXML private Label lblDepositDetail;     // Dan rincian breakdown detailnya
 
     private OfficerSession session;
-    private final CheckInService checkInService = new DummyCheckInService();
+    private final CheckInService checkInService = new HttpCheckInService();
+    private final HttpSettingsService settingsService = new HttpSettingsService();
     private ObservableList<DetailSampah> itemList;
     private final NumberFormat nf = NumberFormat.getNumberInstance(new Locale("id", "ID"));
 
@@ -63,14 +68,21 @@ public class CheckInController implements ContentController {
         setupTable();
         setDefaultDate();
         updateSummary();
+
+        // Pemicu kalkulasi ulang saat jumlah anggota berganti
+        if (spJumlahAnggota != null) {
+            spJumlahAnggota.valueProperty().addListener((obs, oldVal, newVal) -> updateSummary());
+        }
     }
 
     private void setupTrailCombo() {
         if (cbTrail != null) {
-            cbTrail.setItems(FXCollections.observableArrayList(
-                    "Ranu Kumbolo", "Mahameru Summit", "Oro-oro Ombo",
-                    "Kalimati", "Arcopodo", "Ranupani Base Camp"
-            ));
+            // Mengambil rute pendakian dinamis dari settings service (backend)
+            List<String> trails = settingsService.getTrails();
+            if (trails.isEmpty()) {
+                trails = List.of("Ranu Kumbolo", "Mahameru Summit", "Oro-oro Ombo");
+            }
+            cbTrail.setItems(FXCollections.observableArrayList(trails));
         }
     }
 
@@ -121,14 +133,57 @@ public class CheckInController implements ContentController {
 
     @FXML
     private void onAddItem() {
-        // Dialog pilih item sampah
         List<MasterSampah> masterList = checkInService.getMasterSampahList();
-        ChoiceDialog<MasterSampah> dialog = new ChoiceDialog<>(masterList.get(0), masterList);
-        dialog.setTitle("Tambah Item Sampah");
-        dialog.setHeaderText("Pilih jenis sampah yang dibawa:");
-        dialog.setContentText("Item:");
+        if (masterList.isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Daftar master sampah kosong. Konfigurasikan item di halaman Settings.");
+            return;
+        }
 
-        dialog.showAndWait().ifPresent(selectedItem -> {
+        // Dialog kustom terpadu (Kombinasi Dropdown Pilihan Sampah & Qty dalam 1 Window)
+        Dialog<Pair<MasterSampah, Integer>> dialog = new Dialog<>();
+        dialog.setTitle("Tambah Item Sampah");
+        dialog.setHeaderText("Pilih jenis sampah dan masukkan jumlah bawaan:");
+
+        ButtonType btnOkType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(btnOkType, ButtonType.CANCEL);
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        ComboBox<MasterSampah> cbItems = new ComboBox<>(FXCollections.observableArrayList(masterList));
+        cbItems.setValue(masterList.get(0));
+        cbItems.setMaxWidth(Double.MAX_VALUE);
+
+        TextField tfQty = new TextField("1");
+        tfQty.setPromptText("Jumlah item");
+
+        grid.add(new Label("Jenis Sampah:"), 0, 0);
+        grid.add(cbItems, 1, 0);
+        grid.add(new Label("Jumlah Bawa:"), 0, 1);
+        grid.add(tfQty, 1, 1);
+
+        dialog.getDialogPane().setContent(grid);
+
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == btnOkType) {
+                try {
+                    int qty = Integer.parseInt(tfQty.getText().trim());
+                    if (qty <= 0) throw new NumberFormatException();
+                    return new Pair<>(cbItems.getValue(), qty);
+                } catch (NumberFormatException e) {
+                    showAlert(Alert.AlertType.ERROR, "Masukkan angka jumlah yang valid (positif).");
+                    return null;
+                }
+            }
+            return null;
+        });
+
+        dialog.showAndWait().ifPresent(pair -> {
+            MasterSampah selectedItem = pair.getKey();
+            int qty = pair.getValue();
+
             // Cek apakah item sudah ada
             boolean exists = itemList.stream()
                     .anyMatch(d -> d.getMasterSampah().getId() == selectedItem.getId());
@@ -138,21 +193,8 @@ public class CheckInController implements ContentController {
                 return;
             }
 
-            // Dialog jumlah qty
-            TextInputDialog qtyDialog = new TextInputDialog("1");
-            qtyDialog.setTitle("Jumlah Item");
-            qtyDialog.setHeaderText("Berapa unit " + selectedItem.getNamaItem() + " yang dibawa?");
-            qtyDialog.setContentText("Jumlah:");
-            qtyDialog.showAndWait().ifPresent(qtyStr -> {
-                try {
-                    int qty = Integer.parseInt(qtyStr.trim());
-                    if (qty <= 0) throw new NumberFormatException();
-                    itemList.add(new DetailSampah(selectedItem, qty, 0));
-                    updateSummary();
-                } catch (NumberFormatException ex) {
-                    showAlert(Alert.AlertType.ERROR, "Jumlah tidak valid. Masukkan angka positif.");
-                }
-            });
+            itemList.add(new DetailSampah(selectedItem, qty, 0));
+            updateSummary();
         });
     }
 
@@ -178,7 +220,14 @@ public class CheckInController implements ContentController {
 
         // Buat objek Pendakian
         int anggota = spJumlahAnggota != null ? spJumlahAnggota.getValue() : 1;
-        double totalDeposit = checkInService.hitungTotalDeposit(new ArrayList<>(itemList));
+        double depositSampah = checkInService.hitungTotalDeposit(new ArrayList<>(itemList));
+        
+        // Perhitungan biaya tiket & kebersihan (Poin 7)
+        double hargaTiket = settingsService.getTicketPrice();
+        double biayaKebersihan = settingsService.getSanitationFee();
+        double totalTiket = hargaTiket * anggota;
+        double totalBayar = depositSampah + totalTiket + biayaKebersihan;
+
         String tanggal = dpTanggalNaik != null && dpTanggalNaik.getValue() != null
                 ? dpTanggalNaik.getValue().toString() : LocalDate.now().toString();
 
@@ -190,18 +239,31 @@ public class CheckInController implements ContentController {
         p.setStatus("AKTIF");
         p.setWaktuNaik(tanggal + " " + java.time.LocalTime.now().withSecond(0).withNano(0));
         p.setWaktuTurun("-");
-        p.setTotalDeposit(totalDeposit);
+        p.setTotalDeposit(depositSampah); // Simpan hanya deposit yang bisa direfund ke database
 
         boolean ok = checkInService.checkIn(p, new ArrayList<>(itemList));
         if (ok) {
             Alert success = new Alert(Alert.AlertType.INFORMATION,
-                    String.format("✅ Check-In berhasil!%n%nKelompok: %s%nAnggota : %d orang%nTrail   : %s%nDeposit : Rp %s",
+                    String.format("✅ Check-In berhasil!%n%n" +
+                                    "Kelompok : %s (%d orang)%n" +
+                                    "Trail    : %s%n%n" +
+                                    "Rincian Pembayaran Awal:%n" +
+                                    "• Deposit Sampah    : Rp %s%n" +
+                                    "• Tiket (%d org)     : Rp %s%n" +
+                                    "• Layanan Kebersihan: Rp %s%n" +
+                                    "-----------------------------%n" +
+                                    "Total Bayar di Pos   : Rp %s",
                             p.getNamaKetua(), p.getJumlahAnggota(), p.getTrail(),
-                            nf.format((long) totalDeposit)));
+                            nf.format((long) depositSampah),
+                            anggota, nf.format((long) totalTiket),
+                            nf.format((long) biayaKebersihan),
+                            nf.format((long) totalBayar)));
             success.setTitle("Check-In Berhasil");
             success.setHeaderText(null);
             success.showAndWait();
             onReset();
+        } else {
+            showAlert(Alert.AlertType.ERROR, "Terjadi kesalahan saat menyimpan data check-in ke server backend.");
         }
     }
 
@@ -215,15 +277,32 @@ public class CheckInController implements ContentController {
         if (dpEstimasiTurun != null) dpEstimasiTurun.setValue(LocalDate.now().plusDays(2));
         if (spJumlahAnggota != null) spJumlahAnggota.getValueFactory().setValue(2);
         itemList.clear();
+        setupTrailCombo(); // reload list
         updateSummary();
     }
 
     private void updateSummary() {
-        double total = checkInService.hitungTotalDeposit(new ArrayList<>(itemList));
+        double deposit = checkInService.hitungTotalDeposit(new ArrayList<>(itemList));
+        int anggota = spJumlahAnggota != null ? spJumlahAnggota.getValue() : 1;
+        
+        double hargaTiket = settingsService.getTicketPrice();
+        double biayaKebersihan = settingsService.getSanitationFee();
+        
+        double totalTiket = hargaTiket * anggota;
+        double totalBayar = deposit + totalTiket + biayaKebersihan;
+
         if (lblTotalDeposit != null)
-            lblTotalDeposit.setText("Rp " + nf.format((long) total));
-        if (lblDepositDetail != null)
-            lblDepositDetail.setText(itemList.size() + " item · Total deposit yang harus dibayar pendaki");
+            lblTotalDeposit.setText("Rp " + nf.format((long) totalBayar));
+            
+        if (lblDepositDetail != null) {
+            String detailStr = String.format("%d sampah · Deposit: Rp %s · Tiket (%d org): Rp %s · Kebersihan: Rp %s",
+                    itemList.size(),
+                    nf.format((long) deposit),
+                    anggota,
+                    nf.format((long) totalTiket),
+                    nf.format((long) biayaKebersihan));
+            lblDepositDetail.setText(detailStr);
+        }
     }
 
     private void showAlert(Alert.AlertType type, String msg) {

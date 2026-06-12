@@ -13,7 +13,7 @@ public interface SettingsService {
     /** Mendapatkan profil petugas yang sedang login. */
     OfficerSession getOfficerProfile();
 
-    /** Update nama dan stasiun petugas. */
+    /** Update nama, stasiun, dan NIP petugas. */
     boolean updateOfficerProfile(String name, String station, String nip);
 
     /** Mendapatkan daftar konfigurasi harga item sampah. */
@@ -27,4 +27,15 @@ public interface SettingsService {
 
     /** Update nama stasiun pos. */
     boolean updateNamaStasiun(String namaStasiun);
+
+    // --- Baru: Konfigurasi Tarif Pendakian ---
+    double getTicketPrice();
+    boolean updateTicketPrice(double ticketPrice);
+    double getSanitationFee();
+    boolean updateSanitationFee(double sanitationFee);
+
+    // --- Baru: Manajemen Rute ---
+    List<String> getTrails();
+    boolean addTrail(String trail);
+    boolean deleteTrail(String trail);
 }

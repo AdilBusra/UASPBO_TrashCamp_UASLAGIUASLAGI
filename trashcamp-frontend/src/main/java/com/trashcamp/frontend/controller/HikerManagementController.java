@@ -2,7 +2,7 @@ package com.trashcamp.frontend.controller;
 
 import com.trashcamp.frontend.model.OfficerSession;
 import com.trashcamp.frontend.model.Pendakian;
-import com.trashcamp.frontend.service.DummyHikerService;
+import com.trashcamp.frontend.service.HttpHikerService;
 import com.trashcamp.frontend.service.HikerService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -37,7 +37,7 @@ public class HikerManagementController implements ContentController {
     @FXML private TableColumn<Pendakian, Void>    colAksi;
 
     private OfficerSession session;
-    private final HikerService hikerService = new DummyHikerService();
+    private final HikerService hikerService = new HttpHikerService();
     private ObservableList<Pendakian> allData;
     private final NumberFormat nf = NumberFormat.getNumberInstance(new Locale("id", "ID"));
 
@@ -166,10 +166,9 @@ public class HikerManagementController implements ContentController {
 
     @FXML
     private void onNewCheckIn() {
-        Alert info = new Alert(Alert.AlertType.INFORMATION,
-                "Gunakan menu 'Hiker Check-In' di sidebar untuk mendaftarkan kelompok baru.");
-        info.setHeaderText("New Check-In");
-        info.showAndWait();
+        if (DashboardController.getInstance() != null) {
+            DashboardController.getInstance().navigateToCheckIn();
+        }
     }
 
     private void showDetail(Pendakian p) {

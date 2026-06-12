@@ -19,6 +19,8 @@ import java.io.IOException;
  */
 public class DashboardController {
 
+    private static DashboardController instance;
+
     @FXML private Button btnOverview;
     @FXML private Button btnHikers;
     @FXML private Button btnCheckIn;
@@ -37,15 +39,27 @@ public class DashboardController {
     private OfficerSession officerSession;
     private Button currentActiveButton;
 
+    public static DashboardController getInstance() {
+        return instance;
+    }
+
     public void setOfficerSession(OfficerSession session) {
         this.officerSession = session;
     }
 
     /** Dipanggil oleh MainApp setelah set session. */
     public void refresh() {
+        instance = this;
         updateTopbarInfo();
-        // Default halaman: Overview
-        navigateTo(btnOverview, "Overview", "Dashboard ringkasan keseluruhan", "overview_content.fxml");
+        
+        // Cek apakah registrasi baru. Jika ya, paksa ke halaman Settings terlebih dahulu
+        if (officerSession != null && officerSession.isNewRegistration()) {
+            navigateTo(btnSettings, "System Settings", "Konfigurasi sistem", "settings_content.fxml");
+            officerSession.setNewRegistration(false); // Reset flag setelah dinavigasi
+        } else {
+            // Default halaman: Overview
+            navigateTo(btnOverview, "Overview", "Dashboard ringkasan keseluruhan", "overview_content.fxml");
+        }
     }
 
     private void updateTopbarInfo() {
@@ -76,6 +90,12 @@ public class DashboardController {
         }
     }
 
+    public void navigateToCheckIn() {
+        if (btnCheckIn != null) {
+            onMenuClicked(new javafx.event.ActionEvent(btnCheckIn, null));
+        }
+    }
+
     @FXML
     private void onLogoutClicked() {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
@@ -101,7 +121,7 @@ public class DashboardController {
         if (currentActiveButton != null) {
             currentActiveButton.getStyleClass().remove("sidebar-button-active");
         }
-        if (!activeBtn.getStyleClass().contains("sidebar-button-active")) {
+        if (activeBtn != null && !activeBtn.getStyleClass().contains("sidebar-button-active")) {
             activeBtn.getStyleClass().add("sidebar-button-active");
         }
         currentActiveButton = activeBtn;

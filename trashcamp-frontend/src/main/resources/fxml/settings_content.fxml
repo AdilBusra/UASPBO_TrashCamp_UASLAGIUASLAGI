@@ -96,7 +96,7 @@
 
                                 <HBox alignment="CENTER_LEFT" spacing="12">
                                     <VBox spacing="4">
-                                        <Label text="Tarif Deposit &amp; Denda" styleClass="form-section-title"/>
+                                        <Label text="Tarif Deposit &amp; Denda Sampah" styleClass="form-section-title"/>
                                         <Label text="Ubah nominal deposit dan denda per jenis sampah"
                                                styleClass="panel-subtitle"/>
                                     </VBox>
@@ -105,7 +105,7 @@
                                             onAction="#onSaveHarga"/>
                                 </HBox>
 
-                                <TableView fx:id="hargaTable" styleClass="tc-table" prefHeight="380">
+                                <TableView fx:id="hargaTable" styleClass="tc-table" prefHeight="260">
                                     <columns>
                                         <TableColumn fx:id="colNamaItem"   text="Nama Item"       prefWidth="180"/>
                                         <TableColumn fx:id="colKategoriH"  text="Kategori"        prefWidth="100" style="-fx-alignment:CENTER;"/>
@@ -117,17 +117,30 @@
 
                                 <Label fx:id="lblHargaStatus" text="" styleClass="badge-green"
                                        visible="false" managed="false"/>
+
+                                <Separator/>
+
+                                <!-- Form Tambah Item Baru (Poin 1) -->
+                                <Label text="➕ Tambah Item Sampah Baru" styleClass="form-label" style="-fx-font-weight: bold;"/>
+                                <HBox spacing="10" alignment="CENTER_LEFT">
+                                    <TextField fx:id="tfAddNamaItem" promptText="Nama item sampah..." HBox.hgrow="ALWAYS" styleClass="text-input"/>
+                                    <ComboBox fx:id="cbAddKategori" promptText="Kategori" prefWidth="120" styleClass="filter-combo"/>
+                                    <TextField fx:id="tfAddDeposit" promptText="Deposit (Rp)" prefWidth="120" styleClass="text-input"/>
+                                    <TextField fx:id="tfAddDenda" promptText="Denda (Rp)" prefWidth="120" styleClass="text-input"/>
+                                    <Button text="Tambah" styleClass="icon-button" onAction="#onAddNewTrashItem" prefHeight="38"/>
+                                </HBox>
                             </VBox>
                         </VBox>
                     </content>
                 </Tab>
 
                 <!-- ===== TAB 3: Preferensi Sistem ===== -->
-                <Tab text="⚙  Preferensi">
+                <Tab text="⚙  Preferensi &amp; Tarif">
                     <content>
                         <VBox spacing="16">
                             <padding><Insets top="24" right="0" bottom="0" left="0"/></padding>
 
+                            <!-- Informasi Pos -->
                             <VBox styleClass="panel" spacing="18">
                                 <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
                                 <Label text="Informasi Pos Pendakian" styleClass="form-section-title"/>
@@ -139,30 +152,44 @@
                                 </VBox>
 
                                 <HBox spacing="12">
-                                    <Button text="💾  Simpan" styleClass="primary-button"
+                                    <Button text="💾  Simpan Pos" styleClass="primary-button"
                                             onAction="#onSaveStasiun"/>
                                     <Label fx:id="lblStasiunStatus" text="" styleClass="badge-green"
                                            visible="false" managed="false"/>
                                 </HBox>
                             </VBox>
 
-                            <VBox styleClass="panel" spacing="16">
+                            <!-- Konfigurasi Tarif Pendakian (Poin 6, 7) -->
+                            <VBox styleClass="panel" spacing="18">
                                 <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
-                                <Label text="Tentang Aplikasi" styleClass="form-section-title"/>
-                                <HBox spacing="20">
-                                    <VBox spacing="4" HBox.hgrow="ALWAYS">
-                                        <Label text="Aplikasi" styleClass="form-label"/>
-                                        <Label text="TrashCamp — Manajemen Sampah Pendakian" styleClass="panel-subtitle"/>
+                                <Label text="💰 Konfigurasi Tarif Masuk &amp; Kebersihan" styleClass="form-section-title"/>
+                                <HBox spacing="16">
+                                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                        <Label text="Harga Tiket Masuk (per Orang) *" styleClass="form-label"/>
+                                        <TextField fx:id="tfHargaTiket" styleClass="text-input" promptText="Contoh: 15000"/>
                                     </VBox>
-                                    <VBox spacing="4">
-                                        <Label text="Versi" styleClass="form-label"/>
-                                        <Label text="1.0.0-SNAPSHOT" styleClass="panel-subtitle"/>
-                                    </VBox>
-                                    <VBox spacing="4">
-                                        <Label text="Tema" styleClass="form-label"/>
-                                        <Label text="Sosial / Tourism" styleClass="badge-green"/>
+                                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                        <Label text="Uang Layanan Kebersihan (per Kelompok) *" styleClass="form-label"/>
+                                        <TextField fx:id="tfBiayaKebersihan" styleClass="text-input" promptText="Contoh: 20000"/>
                                     </VBox>
                                 </HBox>
+                                <HBox spacing="12" alignment="CENTER_LEFT">
+                                    <Button text="💾  Simpan Tarif" styleClass="primary-button" onAction="#onSaveTarif"/>
+                                    <Label fx:id="lblTarifStatus" text="" styleClass="badge-green" visible="false" managed="false"/>
+                                </HBox>
+                            </VBox>
+
+                            <!-- Manajemen Jalur Pendakian (Poin 2) -->
+                            <VBox styleClass="panel" spacing="18">
+                                <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+                                <Label text="🗺  Manajemen Rute / Jalur Pendakian" styleClass="form-section-title"/>
+                                <ListView fx:id="lvTrails" prefHeight="130" styleClass="tc-table"/>
+                                <HBox spacing="10" alignment="CENTER_LEFT">
+                                    <TextField fx:id="tfNewTrail" promptText="Nama jalur baru..." HBox.hgrow="ALWAYS" styleClass="text-input"/>
+                                    <Button text="+ Tambah Jalur" styleClass="icon-button" onAction="#onAddTrail" prefHeight="38"/>
+                                    <Button text="✕ Hapus" styleClass="danger-button" onAction="#onDeleteTrail" prefHeight="38"/>
+                                </HBox>
+                                <Label fx:id="lblTrailStatus" text="" styleClass="badge-green" visible="false" managed="false"/>
                             </VBox>
                         </VBox>
                     </content>

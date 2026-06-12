@@ -1,13 +1,22 @@
 package com.trashcamp.frontend.model;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Model untuk rincian item sampah bawaan per pendakian.
  * Menerapkan Encapsulation: semua field private, akses via getter/setter.
  */
 public class DetailSampah {
 
+    // Unique ID for mapping to database primary key
+    private Long id;
+
     private MasterSampah masterSampah;
+
+    @SerializedName("jumlahBawa")
     private int jumlahNaik;
+
+    @SerializedName("jumlahKembali")
     private int jumlahTurun;
 
     public DetailSampah() {}
@@ -38,6 +47,7 @@ public class DetailSampah {
     }
 
     // --- Getters ---
+    public Long getId() { return id; }
     public MasterSampah getMasterSampah() { return masterSampah; }
     public int getJumlahNaik() { return jumlahNaik; }
     public int getJumlahTurun() { return jumlahTurun; }
@@ -58,6 +68,7 @@ public class DetailSampah {
     }
 
     // --- Setters ---
+    public void setId(Long id) { this.id = id; }
     public void setMasterSampah(MasterSampah masterSampah) { this.masterSampah = masterSampah; }
     public void setJumlahNaik(int jumlahNaik) { this.jumlahNaik = jumlahNaik; }
     public void setJumlahTurun(int jumlahTurun) { this.jumlahTurun = jumlahTurun; }

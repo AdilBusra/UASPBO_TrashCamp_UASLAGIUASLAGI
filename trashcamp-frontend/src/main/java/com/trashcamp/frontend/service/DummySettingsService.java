@@ -15,6 +15,9 @@ public class DummySettingsService implements SettingsService {
     private String officerStation = "Pos Ranu Kumbolo";
     private String officerNip = "NIP-2026-001";
     private String namaStasiun = "Pos Pendakian Ranu Kumbolo";
+    private double ticketPrice = 15000;
+    private double sanitationFee = 20000;
+    private final List<String> trails = new ArrayList<>();
 
     private final List<HargaKonfigurasi> hargaList;
 
@@ -28,6 +31,10 @@ public class DummySettingsService implements SettingsService {
         hargaList.add(new HargaKonfigurasi(6, "Botol Kaca", "Kaca", 10000, 25000, true));
         hargaList.add(new HargaKonfigurasi(7, "Tisu / Kertas", "Organik", 2000, 5000, true));
         hargaList.add(new HargaKonfigurasi(8, "Sisa Makanan", "Organik", 2000, 8000, true));
+
+        trails.add("Ranu Kumbolo");
+        trails.add("Mahameru Summit");
+        trails.add("Oro-oro Ombo");
     }
 
     @Override
@@ -61,6 +68,47 @@ public class DummySettingsService implements SettingsService {
     @Override
     public boolean updateNamaStasiun(String namaStasiun) {
         this.namaStasiun = namaStasiun;
+        return true;
+    }
+
+    @Override
+    public double getTicketPrice() {
+        return ticketPrice;
+    }
+
+    @Override
+    public boolean updateTicketPrice(double ticketPrice) {
+        this.ticketPrice = ticketPrice;
+        return true;
+    }
+
+    @Override
+    public double getSanitationFee() {
+        return sanitationFee;
+    }
+
+    @Override
+    public boolean updateSanitationFee(double sanitationFee) {
+        this.sanitationFee = sanitationFee;
+        return true;
+    }
+
+    @Override
+    public List<String> getTrails() {
+        return new ArrayList<>(trails);
+    }
+
+    @Override
+    public boolean addTrail(String trail) {
+        if (!trails.contains(trail)) {
+            trails.add(trail);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean deleteTrail(String trail) {
+        trails.remove(trail);
         return true;
     }
 

@@ -111,7 +111,7 @@
                     <VBox styleClass="summary-box" spacing="8">
                         <padding><Insets top="16" right="16" bottom="16" left="16"/></padding>
                         <HBox alignment="CENTER_LEFT">
-                            <Label text="💵  Total Deposit yang Harus Dibayar" styleClass="summary-label"/>
+                            <Label text="💵  Total Pembayaran Awal (Deposit + Tiket + Kebersihan)" styleClass="summary-label"/>
                             <Region HBox.hgrow="ALWAYS"/>
                             <Label fx:id="lblTotalDeposit" text="Rp 0" styleClass="summary-value"/>
                         </HBox>

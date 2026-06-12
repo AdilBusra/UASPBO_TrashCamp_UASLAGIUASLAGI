@@ -16,11 +16,11 @@ public class SecurityConfig {
         http
                 // 1. Izinkan akses ke H2 Console tanpa autentikasi
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers("/h2-console/**", "/api/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                // 2. Matikan CSRF khusus untuk H2 Console agar form login di dalam H2 bekerja
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**"))
+                // 2. Matikan CSRF secara penuh agar request API POST/PUT/DELETE dari frontend diizinkan
+                .csrf(csrf -> csrf.disable())
                 // 3. Izinkan penggunaan Frame (H2 Console menggunakan frame/layout terpisah)
                 .headers(headers -> headers.frameOptions(frame -> frame.disable()))
                 // 4. Aktifkan Basic Auth (opsional untuk testing API nanti)
