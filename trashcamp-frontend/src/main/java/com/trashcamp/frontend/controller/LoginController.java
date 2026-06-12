@@ -10,7 +10,7 @@ import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import javafx.util.Pair;
 
@@ -39,14 +39,12 @@ public class LoginController {
         String username = tfUsername != null ? tfUsername.getText().trim() : "";
         String password = pfPassword != null ? pfPassword.getText().trim() : "";
 
-        // Validasi: field tidak boleh kosong
         if (username.isBlank() || password.isBlank()) {
             showError("Username dan Password wajib diisi.");
             shakeError();
             return;
         }
 
-        // Validasi panjang minimal
         if (username.length() < 3) {
             showError("Username minimal 3 karakter.");
             shakeError();
@@ -60,7 +58,6 @@ public class LoginController {
         }
 
         try {
-            // Melakukan request login ke backend
             Map<String, String> credentials = new HashMap<>();
             credentials.put("username", username);
             credentials.put("password", password);
@@ -68,7 +65,6 @@ public class LoginController {
             String jsonResponse = HttpService.post("/api/auth/login", credentials);
             JsonObject obj = HttpService.getGson().fromJson(jsonResponse, JsonObject.class);
 
-            // Buat session
             String namaLengkap = obj.get("namaLengkap").getAsString();
             String nip = obj.has("nip") && !obj.get("nip").isJsonNull() ? obj.get("nip").getAsString() : "";
             String stasiun = obj.has("stasiun") && !obj.get("stasiun").isJsonNull() ? obj.get("stasiun").getAsString() : "";
@@ -84,38 +80,75 @@ public class LoginController {
             if (errMsg == null || errMsg.isBlank() || errMsg.contains("Connection refused")) {
                 errMsg = "Tidak dapat terhubung ke server backend (offline).";
             }
-            showError("Gagal Masuk: " + errMsg);
+            if (errMsg.contains("Akun belum ditemukan") || errMsg.contains("silakan registrasi")) {
+                showError(errMsg);
+            } else {
+                showError("Gagal Masuk: " + errMsg);
+            }
             shakeError();
         }
     }
 
     @FXML
     private void onRegisterClicked() {
-        // Pop-up dialog register kustom (Poin 4, 10)
+        // Pop-up dialog register kustom (Poin 4, 10) - bergaya kartu login TrashCamp
         Dialog<Pair<String, String>> dialog = new Dialog<>();
         dialog.setTitle("Daftar Pos Baru");
-        dialog.setHeaderText("Masukkan detail akun pos baru Anda:");
+        dialog.setHeaderText(null);
+
+        DialogPane dialogPane = dialog.getDialogPane();
+        dialogPane.getStylesheets().add(
+                getClass().getResource("/css/app.css").toExternalForm()
+        );
+        dialogPane.getStyleClass().add("custom-dialog");
 
         ButtonType registerButtonType = new ButtonType("Daftar Akun", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(registerButtonType, ButtonType.CANCEL);
+        dialogPane.getButtonTypes().addAll(registerButtonType, ButtonType.CANCEL);
 
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(20, 100, 10, 10));
+        // ==== Konten utama (mirip kartu login) ====
+        VBox content = new VBox(18);
+        content.setPrefWidth(380);
 
+        // Judul & subjudul ala "Selamat Datang"
+        VBox titleBox = new VBox(6);
+        Label title = new Label("Daftar Akun Pos Baru");
+        title.getStyleClass().add("login-title");
+        Label subtitle = new Label("Lengkapi data di bawah untuk membuat akun pos baru.");
+        subtitle.getStyleClass().add("login-subtitle");
+        subtitle.setWrapText(true);
+        titleBox.getChildren().addAll(title, subtitle);
+
+        // Username
+        VBox userBox = new VBox(6);
+        Label lblUser = new Label("Username");
+        lblUser.getStyleClass().add("form-label");
         TextField tfUser = new TextField();
-        tfUser.setPromptText("Username");
-        
+        tfUser.setPromptText("Masukkan username pos");
+        tfUser.getStyleClass().add("text-input");
+        userBox.getChildren().addAll(lblUser, tfUser);
+
+        // Password
+        VBox passBox = new VBox(6);
+        Label lblPass = new Label("Password");
+        lblPass.getStyleClass().add("form-label");
         PasswordField pfPass = new PasswordField();
-        pfPass.setPromptText("Password (min 8 karakter)");
+        pfPass.setPromptText("Minimal 8 karakter");
+        pfPass.getStyleClass().add("text-input");
+        passBox.getChildren().addAll(lblPass, pfPass);
 
-        grid.add(new Label("Username:"), 0, 0);
-        grid.add(tfUser, 1, 0);
-        grid.add(new Label("Password:"), 0, 1);
-        grid.add(pfPass, 1, 1);
+        Label hint = new Label("Username minimal 3 karakter & password minimal 8 karakter.");
+        hint.getStyleClass().add("form-hint");
+        hint.setWrapText(true);
 
-        dialog.getDialogPane().setContent(grid);
+        content.getChildren().addAll(titleBox, userBox, passBox, hint);
+        dialogPane.setContent(content);
+
+        // ==== Styling tombol ====
+        Button btnRegister = (Button) dialogPane.lookupButton(registerButtonType);
+        btnRegister.getStyleClass().add("primary-button");
+
+        Button btnCancel = (Button) dialogPane.lookupButton(ButtonType.CANCEL);
+        btnCancel.getStyleClass().add("secondary-button");
 
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == registerButtonType) {
@@ -141,7 +174,6 @@ public class LoginController {
                 String jsonResponse = HttpService.post("/api/auth/register", payload);
                 JsonObject obj = HttpService.getGson().fromJson(jsonResponse, JsonObject.class);
 
-                // Auto-login setelah register sukses dengan penanda isNewRegistration = true (Poin 4)
                 String namaLengkap = obj.get("namaLengkap").getAsString();
                 String nip = obj.has("nip") && !obj.get("nip").isJsonNull() ? obj.get("nip").getAsString() : "";
                 String stasiun = obj.has("stasiun") && !obj.get("stasiun").isJsonNull() ? obj.get("stasiun").getAsString() : "";
@@ -150,7 +182,7 @@ public class LoginController {
                 HttpSettingsService.setCachedProfile(loggedSession);
 
                 showAlert(Alert.AlertType.INFORMATION, "✅ Registrasi Berhasil!\nSelamat datang, " + namaLengkap + ". Anda akan diarahkan ke halaman pengaturan sistem untuk konfigurasi pos.");
-                
+
                 MainApp.getInstance().showDashboard(loggedSession);
             } catch (Exception e) {
                 e.printStackTrace();

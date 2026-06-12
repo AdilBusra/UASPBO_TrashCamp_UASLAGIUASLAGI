@@ -47,7 +47,7 @@
                         </VBox>
                         <VBox spacing="4">
                             <Label text="Total Sampah" styleClass="stat-card-label"/>
-                            <Label fx:id="lblTotalWaste" text="450 kg" styleClass="stat-card-value"/>
+                            <Label fx:id="lblTotalWaste" text="450" styleClass="stat-card-value"/>
                         </VBox>
                     </HBox>
                     <Label fx:id="lblWasteChange" text="↓ 5% pencemaran berkurang" styleClass="stat-card-change-pos"/>

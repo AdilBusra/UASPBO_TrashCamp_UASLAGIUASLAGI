@@ -3,7 +3,7 @@ package com.trashcamp.frontend.controller;
 import com.trashcamp.frontend.controller.OverviewController;
 import com.trashcamp.frontend.model.OfficerSession;
 import com.trashcamp.frontend.service.AnalyticsService;
-import com.trashcamp.frontend.service.DummyAnalyticsService;
+import com.trashcamp.frontend.service.HttpAnalyticsService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -51,7 +51,7 @@ public class AnalyticsController implements ContentController {
     @FXML private TableColumn<String[], String> colTrendLabel;
 
     private OfficerSession session;
-    private final AnalyticsService analyticsService = new DummyAnalyticsService();
+    private final AnalyticsService analyticsService = new HttpAnalyticsService();
     private final NumberFormat nf = NumberFormat.getNumberInstance(new Locale("id", "ID"));
 
     @Override

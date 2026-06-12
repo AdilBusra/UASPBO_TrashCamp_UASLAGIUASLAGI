@@ -42,6 +42,11 @@ public class ConfigController {
 
     @PutMapping("/items")
     public List<MasterSampah> saveItems(@RequestBody List<MasterSampah> items) {
+        for (MasterSampah item : items) {
+            if (item.getId() != null && item.getId() <= 0) {
+                item.setId(null);
+            }
+        }
         return masterSampahRepository.saveAll(items);
     }
 
