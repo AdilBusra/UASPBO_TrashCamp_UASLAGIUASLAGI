@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="16" prefWidth="380" style="-fx-background-color: white; -fx-background-radius: 12; -fx-border-color: #198754; -fx-border-width: 1.5; -fx-border-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 10, 0, 0, 0);"
+      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.trashcamp.frontend.controller.TambahItemController">
+    <padding>
+        <Insets top="24" right="24" bottom="24" left="24"/>
+    </padding>
+
+    <VBox spacing="4">
+        <Label text="➕ Tambah Item Sampah" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #0F5132;"/>
+        <Label text="Pilih jenis sampah dan masukkan jumlah bawaan" style="-fx-font-size: 11px; -fx-text-fill: #6C757D;"/>
+    </VBox>
+
+    <Separator/>
+
+    <GridPane vgap="14" hgap="10">
+        <columnConstraints>
+            <ColumnConstraints prefWidth="110"/>
+            <ColumnConstraints hgrow="ALWAYS"/>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints minHeight="35"/>
+            <RowConstraints minHeight="35"/>
+        </rowConstraints>
+
+        <children>
+            <Label text="Jenis Sampah" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #212529;" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <ComboBox fx:id="cbItems" maxWidth="Infinity" style="-fx-background-color: #F8F9FA; -fx-border-color: #CED4DA; -fx-border-radius: 6; -fx-background-radius: 6;" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+            <Label text="Jumlah Bawa" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #212529;" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+            <TextField fx:id="tfQty" text="1" style="-fx-background-color: white; -fx-border-color: #CED4DA; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 8;" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        </children>
+    </GridPane>
+
+    <Region prefHeight="10"/>
+
+    <HBox spacing="12" alignment="CENTER_RIGHT">
+        <Button text="Batal" onAction="#onCancel" style="-fx-background-color: #E2E3E5; -fx-text-fill: #383D41; -fx-background-radius: 6; -fx-padding: 8 16; -fx-font-weight: bold; -fx-cursor: hand;"/>
+        <Button text="Simpan" onAction="#onSave" style="-fx-background-color: #198754; -fx-text-fill: white; -fx-background-radius: 6; -fx-padding: 8 20; -fx-font-weight: bold; -fx-cursor: hand;"/>
+    </HBox>
+</VBox>

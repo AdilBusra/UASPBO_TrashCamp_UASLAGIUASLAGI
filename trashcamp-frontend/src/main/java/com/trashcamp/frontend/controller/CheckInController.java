@@ -15,6 +15,11 @@ import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.util.Pair;
+import javafx.fxml.FXMLLoader;
+import javafx.stage.Stage;
+import javafx.stage.Modality;
+import javafx.stage.StageStyle;
+import java.io.IOException;
 
 import java.text.NumberFormat;
 import java.time.LocalDate;
@@ -139,68 +144,46 @@ public class CheckInController implements ContentController {
             return;
         }
 
-        // Dialog kustom terpadu (Kombinasi Dropdown Pilihan Sampah & Qty dalam 1 Window)
-        Dialog<Pair<MasterSampah, Integer>> dialog = new Dialog<>();
-        dialog.setTitle("Tambah Item Sampah");
-        dialog.setHeaderText("Pilih jenis sampah dan masukkan jumlah bawaan:");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/dialog_tambah_item.fxml"));
+            javafx.scene.layout.VBox page = loader.load();
 
-        ButtonType btnOkType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(btnOkType, ButtonType.CANCEL);
+            Stage dialogStage = new Stage();
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+            dialogStage.initStyle(StageStyle.UNDECORATED); // Hilangkan title bar kaku bawaan OS
 
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(20, 150, 10, 10));
+            javafx.scene.Scene scene = new javafx.scene.Scene(page);
+            dialogStage.setScene(scene);
 
-        ComboBox<MasterSampah> cbItems = new ComboBox<>(FXCollections.observableArrayList(masterList));
-        cbItems.setValue(masterList.get(0));
-        cbItems.setMaxWidth(Double.MAX_VALUE);
+            TambahItemController controller = loader.getController();
+            controller.setDialogStage(dialogStage);
+            controller.setMasterList(masterList);
 
-        TextField tfQty = new TextField("1");
-        tfQty.setPromptText("Jumlah item");
+            dialogStage.showAndWait();
 
-        grid.add(new Label("Jenis Sampah:"), 0, 0);
-        grid.add(cbItems, 1, 0);
-        grid.add(new Label("Jumlah Bawa:"), 0, 1);
-        grid.add(tfQty, 1, 1);
+            if (controller.isSaveClicked()) {
+                MasterSampah selectedItem = controller.getSelectedMasterSampah();
+                int qty = controller.getQty();
 
-        dialog.getDialogPane().setContent(grid);
-
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == btnOkType) {
-                try {
-                    int qty = Integer.parseInt(tfQty.getText().trim());
-                    if (qty <= 0) throw new NumberFormatException();
-                    return new Pair<>(cbItems.getValue(), qty);
-                } catch (NumberFormatException e) {
-                    showAlert(Alert.AlertType.ERROR, "Masukkan angka jumlah yang valid (positif).");
-                    return null;
+                boolean exists = itemList.stream()
+                        .anyMatch(d -> d.getMasterSampah().getId() == selectedItem.getId());
+                if (exists) {
+                    showAlert(Alert.AlertType.WARNING, "Item '" + selectedItem.getNamaItem() + "' sudah ada di daftar.");
+                    return;
                 }
+
+                itemList.add(new DetailSampah(selectedItem, qty, 0));
+                updateSummary();
             }
-            return null;
-        });
-
-        dialog.showAndWait().ifPresent(pair -> {
-            MasterSampah selectedItem = pair.getKey();
-            int qty = pair.getValue();
-
-            // Cek apakah item sudah ada
-            boolean exists = itemList.stream()
-                    .anyMatch(d -> d.getMasterSampah().getId() == selectedItem.getId());
-            if (exists) {
-                showAlert(Alert.AlertType.WARNING,
-                        "Item '" + selectedItem.getNamaItem() + "' sudah ada di daftar.");
-                return;
-            }
-
-            itemList.add(new DetailSampah(selectedItem, qty, 0));
-            updateSummary();
-        });
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Gagal memuat dialog tambah item.");
+        }
     }
 
     @FXML
     private void onCheckIn() {
-        // Validasi
+        // Validasi kelengkapan form utama
         if (tfNamaKetua == null || tfNamaKetua.getText().isBlank()) {
             showAlert(Alert.AlertType.WARNING, "Nama Ketua Kelompok wajib diisi.");
             return;
@@ -213,13 +196,10 @@ public class CheckInController implements ContentController {
             showAlert(Alert.AlertType.WARNING, "Trail pendakian wajib dipilih.");
             return;
         }
-        // Pilihan membawa 0 sampah diperbolehkan, sehingga validasi minimal 1 sampah dihapus
 
-        // Buat objek Pendakian
         int anggota = spJumlahAnggota != null ? spJumlahAnggota.getValue() : 1;
         double depositSampah = checkInService.hitungTotalDeposit(new ArrayList<>(itemList));
-        
-        // Perhitungan biaya tiket & kebersihan (Poin 7)
+
         double hargaTiket = settingsService.getTicketPrice();
         double biayaKebersihan = settingsService.getSanitationFee();
         double totalTiket = hargaTiket * anggota;
@@ -236,29 +216,44 @@ public class CheckInController implements ContentController {
         p.setStatus("AKTIF");
         p.setWaktuNaik(tanggal + " " + java.time.LocalTime.now().withSecond(0).withNano(0));
         p.setWaktuTurun("-");
-        p.setTotalDeposit(depositSampah); // Simpan hanya deposit yang bisa direfund ke database
+        p.setTotalDeposit(depositSampah);
 
+        // Eksekusi kirim ke database backend
         boolean ok = checkInService.checkIn(p, new ArrayList<>(itemList));
         if (ok) {
-            Alert success = new Alert(Alert.AlertType.INFORMATION,
-                    String.format("✅ Check-In berhasil!%n%n" +
-                                    "Kelompok : %s (%d orang)%n" +
-                                    "Trail    : %s%n%n" +
-                                    "Rincian Pembayaran Awal:%n" +
-                                    "• Deposit Sampah    : Rp %s%n" +
-                                    "• Tiket (%d org)     : Rp %s%n" +
-                                    "• Layanan Kebersihan: Rp %s%n" +
-                                    "-----------------------------%n" +
-                                    "Total Bayar di Pos   : Rp %s",
-                            p.getNamaKetua(), p.getJumlahAnggota(), p.getTrail(),
-                            nf.format((long) depositSampah),
-                            anggota, nf.format((long) totalTiket),
-                            nf.format((long) biayaKebersihan),
-                            nf.format((long) totalBayar)));
-            success.setTitle("Check-In Berhasil");
-            success.setHeaderText(null);
-            success.showAndWait();
-            onReset();
+            try {
+                // Memanggil FXML nota kustom menggantikan dialog Alert lama yang kaku
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/dialog_sukses_checkin.fxml"));
+                javafx.scene.layout.VBox page = loader.load();
+
+                Stage dialogStage = new Stage();
+                dialogStage.initModality(Modality.APPLICATION_MODAL);
+                dialogStage.initStyle(StageStyle.UNDECORATED);
+
+                javafx.scene.Scene scene = new javafx.scene.Scene(page);
+                dialogStage.setScene(scene);
+
+                SuksesCheckInController controller = loader.getController();
+                controller.setDialogStage(dialogStage);
+
+                // Kirim seluruh rincian data pembayaran ke pop-up kustom
+                controller.setSummaryData(
+                        p.getNamaKetua(),
+                        p.getJumlahAnggota(),
+                        p.getTrail(),
+                        "Rp " + nf.format((long) depositSampah),
+                        "Rp " + nf.format((long) totalTiket),
+                        "Rp " + nf.format((long) biayaKebersihan),
+                        "Rp " + nf.format((long) totalBayar)
+                );
+
+                dialogStage.showAndWait();
+                onReset(); // Otomatis bersihkan form setelah pop-up ditutup
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                showAlert(Alert.AlertType.ERROR, "Data berhasil disimpan, namun gagal memuat struk kustom.");
+            }
         } else {
             showAlert(Alert.AlertType.ERROR, "Terjadi kesalahan saat menyimpan data check-in ke server backend.");
         }
