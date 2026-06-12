@@ -850,3 +850,40 @@
     -fx-font-size: 13px;
     -fx-padding: 8 10 8 14;
 }
+/* ========== CUSTOM DIALOG (DAFTAR POS BARU) ========== */
+.custom-dialog {
+    -fx-background-color: white;
+    -fx-background-radius: 24;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+}
+
+.custom-dialog > .header-panel {
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+}
+
+.custom-dialog > .content.dialog-pane {
+    -fx-padding: 36 40 16 40;
+    -fx-background-color: white;
+    -fx-background-radius: 24 24 0 0;
+}
+
+.custom-dialog .button-bar .container {
+    -fx-padding: 8 40 36 40;
+    -fx-background-color: white;
+    -fx-background-radius: 0 0 24 24;
+}
+
+.custom-dialog .button-bar .button {
+    -fx-padding: 12 32 12 32;
+    -fx-min-width: 150px;
+    -fx-alignment: CENTER;
+}
+
+.custom-dialog .button-bar .container {
+    -fx-padding: 8 40 36 40;
+    -fx-background-color: white;
+    -fx-background-radius: 0 0 24 24;
+}
