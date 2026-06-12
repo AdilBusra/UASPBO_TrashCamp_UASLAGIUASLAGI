@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 
 <ScrollPane fitToWidth="true" styleClass="content-scroll" hbarPolicy="NEVER"
-            xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.trashcamp.frontend.controller.SettingsController">
     <content>
         <VBox spacing="20">
@@ -72,10 +72,8 @@
                                 </VBox>
 
                                 <HBox spacing="12" alignment="CENTER_LEFT">
-                                    <Button text="💾  Simpan Perubahan" styleClass="primary-button"
-                                            onAction="#onSaveProfil"/>
-                                    <Button text="Reset" styleClass="secondary-button"
-                                            onAction="#onResetProfil"/>
+                                    <Button text="💾 Simpan Perubahan" styleClass="primary-button" style="-fx-min-width: 180; -fx-min-height: 40;" onAction="#onSaveProfil"/>
+                                    <Button text="Reset" styleClass="secondary-button" onAction="#onResetProfil"/>
                                 </HBox>
 
                                 <Label fx:id="lblProfilStatus" text="" styleClass="badge-green"

@@ -19,8 +19,7 @@
                 <Label fx:id="lblTotal" text="Menampilkan semua data pendakian" styleClass="section-sub"/>
             </VBox>
             <Region HBox.hgrow="ALWAYS"/>
-            <Button text="+ New Check-In" styleClass="primary-button"
-                    onAction="#onNewCheckIn" prefHeight="36"/>
+            <Button text="+ New Check-In" styleClass="primary-button" style="-fx-min-width: 160; -fx-min-height: 40;" onAction="#onNewCheckIn"/>
         </HBox>
 
         <!-- Search & Filter Row -->
