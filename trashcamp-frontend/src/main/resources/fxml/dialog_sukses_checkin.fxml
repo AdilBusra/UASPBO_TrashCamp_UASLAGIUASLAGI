@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="18" prefWidth="400" style="-fx-background-color: white; -fx-background-radius: 12; -fx-border-color: #198754; -fx-border-width: 1.5; -fx-border-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 10, 0, 0, 0);"
+      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.trashcamp.frontend.controller.SuksesCheckInController">
+    <padding>
+        <Insets top="24" right="24" bottom="24" left="24"/>
+    </padding>
+
+    <VBox alignment="CENTER" spacing="8">
+        <Label text="✅" style="-fx-font-size: 40px;"/>
+        <Label text="Check-In Berhasil!" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #198754;"/>
+    </VBox>
+
+    <VBox spacing="6" style="-fx-background-color: #F8F9FA; -fx-background-radius: 8; -fx-padding: 12; -fx-border-color: #E9ECEF; -fx-border-radius: 8;">
+        <HBox>
+            <Label text="Kelompok" style="-fx-text-fill: #6C757D; -fx-font-size: 12px;" prefWidth="90"/>
+            <Label fx:id="lblKelompok" style="-fx-font-weight: bold; -fx-text-fill: #212529; -fx-font-size: 12px;" text="-"/>
+        </HBox>
+        <HBox>
+            <Label text="Jalur / Trail" style="-fx-text-fill: #6C757D; -fx-font-size: 12px;" prefWidth="90"/>
+            <Label fx:id="lblTrail" style="-fx-font-weight: bold; -fx-text-fill: #212529; -fx-font-size: 12px;" text="-"/>
+        </HBox>
+    </VBox>
+
+    <VBox spacing="10">
+        <Label text="Rincian Pembayaran Awal:" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #495057;"/>
+
+        <HBox alignment="CENTER_LEFT">
+            <Label text="• Deposit Sampah" style="-fx-text-fill: #212529; -fx-font-size: 12px;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="lblDeposit" text="Rp 0" style="-fx-text-fill: #212529; -fx-font-size: 12px;"/>
+        </HBox>
+
+        <HBox alignment="CENTER_LEFT">
+            <Label fx:id="lblTiketTitle" text="• Tiket Masuk" style="-fx-text-fill: #212529; -fx-font-size: 12px;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="lblTiket" text="Rp 0" style="-fx-text-fill: #212529; -fx-font-size: 12px;"/>
+        </HBox>
+
+        <HBox alignment="CENTER_LEFT">
+            <Label text="• Layanan Kebersihan" style="-fx-text-fill: #212529; -fx-font-size: 12px;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="lblKebersihan" text="Rp 0" style="-fx-text-fill: #212529; -fx-font-size: 12px;"/>
+        </HBox>
+
+        <Separator style="-fx-padding: 4 0;"/>
+
+        <HBox alignment="CENTER_LEFT">
+            <Label text="Total Bayar di Pos" style="-fx-font-weight: bold; -fx-text-fill: #0F5132; -fx-font-size: 14px;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="lblTotal" text="Rp 0" style="-fx-font-weight: bold; -fx-text-fill: #0F5132; -fx-font-size: 16px;"/>
+        </HBox>
+    </VBox>
+
+    <Button text="Selesai" onAction="#onClose" maxWidth="Infinity"
+            style="-fx-background-color: #198754; -fx-text-fill: white; -fx-background-radius: 6; -fx-padding: 10; -fx-font-weight: bold; -fx-cursor: hand;"/>
+</VBox>
