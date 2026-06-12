@@ -213,10 +213,7 @@ public class CheckInController implements ContentController {
             showAlert(Alert.AlertType.WARNING, "Trail pendakian wajib dipilih.");
             return;
         }
-        if (itemList.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Minimal satu item sampah harus dicatat.");
-            return;
-        }
+        // Pilihan membawa 0 sampah diperbolehkan, sehingga validasi minimal 1 sampah dihapus
 
         // Buat objek Pendakian
         int anggota = spJumlahAnggota != null ? spJumlahAnggota.getValue() : 1;
